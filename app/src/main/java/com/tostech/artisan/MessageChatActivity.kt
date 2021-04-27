@@ -74,12 +74,7 @@ class MessageChatActivity : AppCompatActivity() {
         }
         val client = Client()
 
-       // apiService = client.getClient("https://fcm.googleapis.com/")?.create(APIService::class.java)
 
-
-       /* val uid = firebaseUser!!.uid
-        FirebaseMessaging.getInstance().subscribeToTopic("/topics/$uid")
-*/
 
         intent = intent
         userVisit = intent.getStringExtra("visit_id").toString()
@@ -297,7 +292,7 @@ class MessageChatActivity : AppCompatActivity() {
         messageHashMap["message"] = message
         messageHashMap["receiver"] = receiverID
         messageHashMap["isseen"] = false
-        messageHashMap["url"] = ""
+       // messageHashMap["url"] = ""
         messageHashMap["messageId"] = messageKey
 
         reference.child("Chats").child(messageKey!!).setValue(messageHashMap)
