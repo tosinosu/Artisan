@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.home.HomeFragment"
+    >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/parent"
+    android:background="@android:color/white"
+    >
+
+<androidx.cardview.widget.CardView
+    android:id="@+id/pix_Rlayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="@+id/parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+    <ImageView
+        android:id="@+id/logo_pix"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/passport1_background"
+        tools:srcCompat="@tools:sample/avatars" />
+
+        <Button
+            android:id="@+id/btnOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorGreen"
+            android:textColor="@color/colorWhite"
+            android:layout_below="@id/logo_pix"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="2dp"
+            android:textSize="10sp"
+            android:layout_toStartOf="@id/profilepix"
+            android:text="@string/request"
+            tools:ignore="SmallSp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profilepix"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="90dp"
+            android:scaleType="centerCrop"
+            app:civ_border_width="3dp"
+            app:civ_border_color="@android:color/white"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_baseline_person_24"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/verify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_toEndOf="@+id/profilepix"
+            android:layout_below="@id/logo_pix"
+            android:layout_marginTop="30sp" />
+
+        <androidx.appcompat.widget.AppCompatRatingBar
+            android:id="@+id/rating"
+            android:layout_width="wrap_content"
+            android:stepSize="0.5"
+            android:numStars="5"
+            android:isIndicator="true"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profilepix"
+            android:layout_centerHorizontal="true"
+            />
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
+
+    <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/bus_name_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pix_Rlayout">
+    <TextView
+        android:id="@+id/businessNametxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:typeface="sans"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/workDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textStyle="normal"
+            android:textSize="12sp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/businessNametxt"/>
+        </RelativeLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/pixRecycle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/parent"
+        app:layout_constraintStart_toStartOf="@+id/parent"
+        app:layout_constraintTop_toBottomOf="@+id/bus_name_layout" >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:elevation="12dp"
+            android:background="@color/rave_lightish_grey_bg"
+            android:orientation="horizontal">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ly1"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:orientation="vertical"
+                android:padding="4dp"
+                app:layout_constraintEnd_toStartOf="@+id/ly2"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/advertPix1"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    app:layout_constraintBottom_toTopOf="@+id/advertText1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
+
+                <TextView
+                    android:id="@+id/advertText1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/advertPix1"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ly2"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:orientation="vertical"
+
+                android:padding="4dp"
+                app:layout_constraintEnd_toStartOf="@+id/ly3"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/ly1"
+                app:layout_constraintTop_toTopOf="@+id/ly1">
+
+                <ImageView
+                    android:id="@+id/advertPix2"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    app:layout_constraintBottom_toTopOf="@+id/advertText2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
+
+                <TextView
+                    android:id="@+id/advertText2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/advertPix2"
+                    app:layout_constraintStart_toStartOf="@+id/advertPix2" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ly3"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:orientation="vertical"
+
+                android:padding="4dp"
+                app:layout_constraintEnd_toStartOf="@+id/ly4"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/ly2"
+                app:layout_constraintTop_toTopOf="@+id/ly2">
+
+                <ImageView
+                    android:id="@+id/advertPix3"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    app:layout_constraintBottom_toTopOf="@+id/advertText3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
+
+                <TextView
+                    android:id="@+id/advertText3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/advertPix3"
+                    app:layout_constraintStart_toStartOf="@+id/advertPix3" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ly4"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:orientation="vertical"
+                android:padding="4dp"
+                app:layout_constraintEnd_toStartOf="@+id/ly5"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/ly3"
+                app:layout_constraintTop_toTopOf="@+id/ly3">
+
+                <ImageView
+                    android:id="@+id/advertPix4"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    app:layout_constraintBottom_toTopOf="@+id/advertText4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/advertText4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/advertPix4"
+                    app:layout_constraintStart_toStartOf="@+id/advertPix4" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ly5"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:orientation="vertical"
+
+                android:padding="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/ly4"
+                app:layout_constraintTop_toTopOf="@+id/ly4">
+
+                <ImageView
+                    android:id="@+id/advertPix5"
+                    android:layout_width="0dp"
+                    android:layout_height="130dp"
+                    app:layout_constraintBottom_toTopOf="@+id/advertText5"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/advertText5"
+                    android:layout_width="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/advertPix5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_height="wrap_content" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/txtPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imBtnPhone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/imBtnPhone"
+        app:layout_constraintTop_toTopOf="@+id/imBtnPhone" />
+
+    <ImageButton
+        android:id="@+id/imBtnPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@null"
+        android:src="@drawable/ic_baseline_phone_24"
+        app:layout_constraintStart_toStartOf="@+id/imBtnAddress"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnAddress" />
+
+    <ImageButton
+        android:id="@+id/imBtnFacebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:src="@drawable/ic_icons8_facebook"
+        app:layout_constraintStart_toStartOf="@+id/imBtnWhatsApp"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnWhatsApp" />
+
+    <ImageButton
+        android:id="@+id/imBtnTwitter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@null"
+        app:layout_constraintStart_toStartOf="@+id/imBtnFacebook"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnFacebook"
+        android:src="@drawable/ic_icons8_twitter_squared" />
+
+    <ImageButton
+        android:id="@+id/imBtnInstagram"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@+id/imBtnTwitter"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnTwitter"
+        android:src="@drawable/ic_icons8_instagram" />
+
+    <ImageButton
+        android:id="@+id/imBtnLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@+id/imBtnInstagram"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnInstagram"
+        android:src="@drawable/ic_baseline_link_24" />
+
+    <TextView
+        android:id="@+id/txtFacebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imBtnFacebook"
+        app:layout_constraintStart_toEndOf="@+id/imBtnFacebook"
+        app:layout_constraintTop_toTopOf="@+id/imBtnFacebook" />
+
+    <TextView
+        android:id="@+id/txtTwitter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imBtnTwitter"
+        app:layout_constraintStart_toEndOf="@+id/imBtnTwitter"
+        app:layout_constraintTop_toTopOf="@+id/imBtnTwitter" />
+
+    <TextView
+        android:id="@+id/txtInstagram"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imBtnInstagram"
+        app:layout_constraintStart_toEndOf="@+id/imBtnInstagram"
+        app:layout_constraintTop_toTopOf="@+id/imBtnInstagram" />
+
+
+    <TextView
+        android:id="@+id/txtOtherLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imBtnLink"
+        app:layout_constraintStart_toEndOf="@+id/imBtnLink"
+        app:layout_constraintTop_toTopOf="@+id/imBtnLink" />
+
+    <ImageButton
+        android:id="@+id/imBtnWhatsApp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="@+id/imBtnPhone"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnPhone"
+        android:src="@drawable/ic_icons8_whatsapp" />
+
+    <TextView
+        android:id="@+id/txtWhatsApp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imBtnWhatsApp"
+        app:layout_constraintStart_toEndOf="@+id/imBtnWhatsApp"
+        app:layout_constraintTop_toTopOf="@+id/imBtnWhatsApp" />
+
+    <ImageButton
+        android:id="@+id/imBtnAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@null"
+        android:src="@drawable/ic_baseline_location_on_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pixRecycle" />
+
+    <TextView
+        android:id="@+id/txtAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:gravity="center"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imBtnAddress"
+        app:layout_constraintStart_toEndOf="@+id/imBtnAddress"
+        app:layout_constraintTop_toTopOf="@+id/imBtnAddress" />
+
+    <View
+        android:id="@+id/view"
+        style="@style/Divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnAddress" />
+
+    <View style="@style/Divider"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnPhone"/>
+    <View style="@style/Divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnWhatsApp"/>
+
+    <View
+        android:id="@+id/view4"
+        style="@style/Divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnFacebook" />
+
+    <View
+        android:id="@+id/view3"
+        style="@style/Divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnTwitter" />
+
+    <View
+        android:id="@+id/view2"
+        style="@style/Divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnInstagram" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabMessage"
+        android:layout_width="159dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/view2"
+        app:layout_constraintTop_toBottomOf="@+id/imBtnTwitter"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>

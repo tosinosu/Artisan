@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="10dp"
+    app:cardCornerRadius="4dp"
+    app:cardPreventCornerOverlap="false"
+    android:id="@+id/card_list">
+
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/passport1_background"
+        android:id="@+id/pix"
+        android:padding="0dp"
+        android:layout_margin="0dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/business_images"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?selectableItemBackground"/>
+
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/order_list"
+        android:gravity="center_horizontal"/>
+
+</LinearLayout>
+
+</androidx.cardview.widget.CardView>

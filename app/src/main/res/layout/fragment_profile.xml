@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabMode="auto"
+        style="@style/Widget.MaterialComponents.TabLayout.Colored"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="@+id/pagerProfile"
+        app:layout_constraintStart_toStartOf="@+id/pagerProfile"
+        app:layout_constraintTop_toBottomOf="@+id/pix_profile"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/pix_profile"
+        android:layout_width="97dp"
+        android:layout_height="118dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/passport1_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pagerProfile"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+
+    <Button
+        android:id="@+id/upload_profilepix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/upload"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/pix_profile"
+        app:layout_constraintTop_toTopOf="@+id/pix_profile" />
+
+    <Button
+        android:id="@+id/delete_profilepix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/delete"
+        app:layout_constraintBottom_toBottomOf="@+id/pix_profile"
+        app:layout_constraintEnd_toEndOf="@+id/upload_profilepix"
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="@+id/upload_profilepix"
+        app:layout_constraintTop_toBottomOf="@+id/upload_profilepix" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

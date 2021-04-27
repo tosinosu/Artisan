@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="artisanList">
+        <item> Air conditioning repairers </item>
+        <item> Aluminium Works</item>
+        <item>Architect</item>
+        <item>    Artist</item>
+        <item>       Adire Making</item>
+        <item>      Car Battery Dealers</item>
+        <item>Mechanics</item>
+        <item>     Babies And Kiddies Products</item>
+        <item>Shoes/Bag Making/Sales</item>
+        <item>Baker</item>
+        <item>Barber</item>
+        <item>Bead Making</item>
+        <item> Beauty Salon</item>
+        <item>   Electronics Repairer</item>
+        <item>  Blacksmith Maker</item>
+        <item>  Cement Dealer</item>
+        <item>  Bore-hole Dealer </item>
+        <item>  Bricklayer</item>
+        <item> Bridal Shower</item>
+        <item>    Building Contractor</item>
+        <item>  Building Material Sellers</item>
+        <item> Car/Truck Hire Services</item>
+        <item>Car Sales </item>
+        <item> Car Wash</item>
+        <item> Carpenters</item>
+        <item> Furniture Maker</item>
+        <item> Caterers</item>
+        <item> CCTV Installation</item>
+        <item>Dry Cleaning</item>
+        <item>  Cloth Seller</item>
+        <item>  Laptop/Desktop Engineer</item>
+        <item>Supermarket</item>
+        <item>   Computer Graphics Designer</item>
+        <item>  Cosmetics Seller</item>
+        <item> Craft Work Designer</item>
+        <item>  Disc Jokey (D.J.) Services</item>
+        <item> Event Decorator/Planner</item>
+        <item> Printing Services</item>
+        <item>   Diesel Dealer</item>
+        <item> Driving School</item>
+        <item> Events Center</item>
+        <item> Tailor/Fashion Designer</item>
+
+        <item>  Refrigerator Repairers</item>
+        <item>    Frozen Food Seller</item>
+        <item>    Gas Cooker Seller</item>
+        <item> Generator Repairer</item>
+        <item>   Aluminium Installation Services </item>
+        <item>     Car Maintenance Works</item>
+        <item>     Goldsmith</item>
+        <item>	Gym Services</item>
+        <item>  Hairdressers</item>
+        <item>  Delivery Services</item>
+        <item>   Horticulturist</item>
+        <item>   Household Equipment Sellers</item>
+        <item>  Ice Block Seller</item>
+        <item>	Interior Design Services</item>
+        <item> Stone Interlocking Services</item>
+        <item> Inverter Sales and Repairs</item>
+        <item> Key Cutter</item>
+
+        <item> Makeup artists</item>
+
+        <item> Marble and Granite Services</item>
+        <item>  Master of Ceremony (M.C) </item>
+        <item> Musical Instrument Services </item>
+        <item> Musical Band </item>
+        <item> Newspaper Vendor </item>
+
+        <item> Home/Office Equipment Seller </item>
+        <item> Painter </item>
+        <item> Panel Beater </item>
+        <item> Fumigation Services</item>
+        <item> Pet Seller</item>
+        <item>  Phone Seller/Repairer</item>
+
+        <item>  Photographer</item>
+        <item>  Plumber </item>
+        <item> Pumping Machine Installer/Repairer </item>
+        <item>     Real Estate Agents</item>
+        <item>    Rental Services</item>
+        <item>  Shoemaker</item>
+        <item>    Skin Therapy </item>
+
+        <item>   Steel Works</item>
+
+        <item> Car Parts Sales/Repair</item>
+        <item> Upholstery Services </item>
+
+        <item> Vehicle Tracking Services</item>
+
+        <item>   Vulcanizer </item>
+        <item> Watch Seller/Repairer </item>
+        <item>  Water Sales/Treatment Services </item>
+        <item>  Welder</item>
+
+        <item> Window Blinds Services </item>
+
+        <item> Writer </item>
+
+        <item> Screen Engraving </item>
+
+        <item> Solar Power Equipment Services </item>
+
+        <item> Digital Marketer </item>
+
+    </string-array>
+</resources>

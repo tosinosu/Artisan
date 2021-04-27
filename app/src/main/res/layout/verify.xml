@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+     <ScrollView
+         android:id="@+id/content"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent" >
+
+ <androidx.constraintlayout.widget.ConstraintLayout
+  android:layout_width="match_parent"
+     android:layout_height="match_parent">
+
+
+     <com.google.android.material.switchmaterial.SwitchMaterial
+         android:id="@+id/verifyMailSwitch"
+         android:layout_width="0dp"
+         android:layout_height="wrap_content"
+         android:text="@string/verify_email_address"
+         android:checked="false"
+         android:textStyle="italic"
+         android:textSize="16sp"
+         app:layout_constraintEnd_toEndOf="parent"
+         app:layout_constraintHorizontal_bias="0.08"
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>

@@ -1,0 +1,157 @@
+package com.tostech.artisan.ui.order
+
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.firebase.ui.database.SnapshotParser
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.FirebaseDatabase
+import com.tostech.artisan.AdapterClasses.OrderAdapter
+import com.tostech.artisan.R
+import com.tostech.artisan.SimpleDividerItemDecoration
+import com.tostech.artisan.SwipeToDelete
+import com.tostech.artisan.data.Order
+import com.tostech.artisan.databinding.FragmentOrderBinding
+
+class OrderFragment : Fragment() {
+
+    private lateinit var binding: FragmentOrderBinding
+    private lateinit var orderAdapter: OrderAdapter
+
+    var order = ArrayList<Order>()
+    var firebaseUserID: String = ""
+    var orderData = Order("", "", "", "")
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+       binding = DataBindingUtil.inflate(inflater, R.layout.fragment_order, container, false)
+
+        firebaseUserID = FirebaseAuth.getInstance().currentUser!!.uid
+
+
+        val reference = FirebaseDatabase.getInstance().reference.child("User").child(firebaseUserID).child("order")
+        order = ArrayList()
+        val options: FirebaseRecyclerOptions<Order> =
+            FirebaseRecyclerOptions.Builder<Order>()
+                .setQuery(reference, object : SnapshotParser<Order> {
+
+                    override fun parseSnapshot(snapshot: DataSnapshot): Order {
+
+                       orderData = Order(
+                            snapshot.child("uid").value.toString(),
+                            snapshot.child("username").value.toString(),
+                            snapshot.child("status").value.toString(),
+                            snapshot.child("purl").value.toString()
+                            )
+
+                        Log.v("orderis", snapshot.child("purl").value.toString()
+                        )
+
+                        return orderData
+                    }
+
+                })
+                .build()
+
+        binding.recyclerOrder.apply {
+            layoutManager = LinearLayoutManager(context)
+            val simpleDividerItemDecoration = SimpleDividerItemDecoration(context)
+            addItemDecoration(simpleDividerItemDecoration)
+            orderAdapter = OrderAdapter(options)
+            binding.recyclerOrder.adapter = orderAdapter
+        }
+        Log.v("orderid", orderData.uid)
+
+        val swipeToDeleteCallback =
+            object : SwipeToDelete(requireContext(), 0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val position = viewHolder.adapterPosition
+                    val orderID = orderAdapter.getRef(position).key
+
+                    val reference = FirebaseDatabase.getInstance().reference.child("User").child(firebaseUserID)
+
+                    if (direction == ItemTouchHelper.LEFT ) {
+
+                        Log.v("orderid", orderID!!)
+
+                   if (!orderID.isNullOrEmpty()) {
+                            val pushValue = reference.child("accepted_order")
+                           pushValue.push().setValue(orderID)
+                            orderAdapter.getRef(position).removeValue()
+                        }
+                            orderAdapter.notifyDataSetChanged()
+
+                        //     orderAdapter.undoView(viewHolder.adapterPosition)
+                    }
+                    else {
+                        orderAdapter.getRef(position).removeValue()
+                        orderAdapter.notifyDataSetChanged()
+//                        orderAdapter.undoView(viewHolder.adapterPosition)
+                    }
+                }
+
+            }
+
+        //configure left swipe
+        swipeToDeleteCallback.leftBG = ContextCompat.getColor(requireContext(), R.color.colorGreen)
+        swipeToDeleteCallback.leftLabel = "Accept Order"
+        swipeToDeleteCallback.leftIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_baseline_check_circle_24)
+
+        //configure right swipe
+        swipeToDeleteCallback.rightBG = ContextCompat.getColor(requireContext(), R.color.colorError)
+        swipeToDeleteCallback.rightLabel = "Reject Order"
+        swipeToDeleteCallback.rightIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_baseline_delete_sweep_24)
+
+        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+
+        itemTouchHelper.attachToRecyclerView(binding.recyclerOrder)
+
+
+        return binding.root
+    }
+
+    fun show(message: String){
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+    override fun onStart() {
+        super.onStart()
+        orderAdapter.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        orderAdapter.stopListening()
+    }
+
+ /*   override fun onMove(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
+    ): Boolean {
+        val fromPos = viewHolder.adapterPosition
+        val toPos = target.adapterPosition
+
+        return true
+    }*/
+
+  /*  override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        val position = viewHolder.adapterPosition
+        val object1 = orderAdapter.o
+    }*/
+}
