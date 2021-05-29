@@ -61,7 +61,6 @@
         android:layout_marginTop="2dp"
         android:layout_toRightOf="@id/search_pix"
         android:padding="6dp"
-        android:text="@string/last_message"
         android:textSize="19sp"
         app:layout_constraintEnd_toEndOf="@+id/business_name"
         app:layout_constraintHorizontal_bias="0.0"

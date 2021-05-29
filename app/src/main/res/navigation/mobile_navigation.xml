@@ -35,6 +35,24 @@
         tools:layout="@layout/fragment_settings" />
 
     <fragment
+        android:id="@+id/nav_profile2"
+        android:name="com.tostech.artisan.Profile"
+        android:label="@string/profile"
+        tools:layout="@layout/profile" />
+
+    <fragment
+        android:id="@+id/nav_advert_image"
+        android:name="com.tostech.artisan.Pictures"
+        android:label="@string/advert_image"
+        tools:layout="@layout/logo" />
+
+    <fragment
+        android:id="@+id/nav_subscribe"
+        android:name="com.tostech.artisan.Subscription"
+        android:label="@string/subscription"
+        tools:layout="@layout/subscription" />
+
+    <fragment
         android:id="@+id/nav_about"
         android:name="com.tostech.artisan.ui.about.AboutFragment"
         android:label="@string/about"

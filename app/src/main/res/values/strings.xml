@@ -45,6 +45,7 @@
     <string name="business_advert_5">Business Advert #5</string>
     <string name="delete">Delete</string>
     <string name="business_logo">Business Logo</string>
+    <string name="menu_item_share_plant" translation_description="The label for the Share menu item">Share</string>
 
 
     <!--    For flutterwave-->
@@ -110,6 +111,12 @@
     <string name="type_description">Description</string>
     <string name="show_or_hide_profile">Show or Hide Profile</string>
     <string name="last_message">Last Message</string>
+    <string name="click_to_view_comment">Click to view comments</string>
+    <string name="select_country">Select Country</string>
+    <string name="plan">Plan</string>
+    <string name="advert_image">Advert Image</string>
+    <string name="subscription">Subscription</string>
+    <string name="manage_account">Manage Account</string>
 
 
     <string-array name="artisan_names">

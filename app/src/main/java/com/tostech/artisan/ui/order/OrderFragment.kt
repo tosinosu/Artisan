@@ -32,7 +32,7 @@ class OrderFragment : Fragment() {
 
     var order = ArrayList<Order>()
     var firebaseUserID: String = ""
-    var orderData = Order("", "", "", "")
+    var orderData = Order()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -73,7 +73,7 @@ class OrderFragment : Fragment() {
             val simpleDividerItemDecoration = SimpleDividerItemDecoration(context)
             addItemDecoration(simpleDividerItemDecoration)
             orderAdapter = OrderAdapter(options)
-            binding.recyclerOrder.adapter = orderAdapter
+            adapter = orderAdapter
         }
         Log.v("orderid", orderData.uid)
 
@@ -81,7 +81,7 @@ class OrderFragment : Fragment() {
             object : SwipeToDelete(requireContext(), 0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val position = viewHolder.adapterPosition
+                    val position = viewHolder.bindingAdapterPosition
                     val orderID = orderAdapter.getRef(position).key
 
                     val reference = FirebaseDatabase.getInstance().reference.child("User").child(firebaseUserID)
@@ -92,10 +92,12 @@ class OrderFragment : Fragment() {
 
                    if (!orderID.isNullOrEmpty()) {
                             val pushValue = reference.child("accepted_order")
-                           pushValue.push().setValue(orderID)
+                           pushValue.child(firebaseUserID).child("id").setValue(orderID)
+                           pushValue.child(firebaseUserID).child("rated").setValue(0)
+                           pushValue.child(firebaseUserID).child("commented").setValue(0)
                             orderAdapter.getRef(position).removeValue()
                         }
-                            orderAdapter.notifyDataSetChanged()
+                            //orderAdapter.notifyDataSetChanged()
 
                         //     orderAdapter.undoView(viewHolder.adapterPosition)
                     }

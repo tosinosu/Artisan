@@ -8,7 +8,13 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.toColor
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.Continuation
@@ -17,6 +23,8 @@ import com.google.android.material.internal.NavigationMenuItemView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageTask
 import com.google.firebase.storage.UploadTask
@@ -24,9 +32,11 @@ import com.google.gson.Gson
 import com.tostech.artisan.AdapterClasses.ChatAdapter
 import com.tostech.artisan.data.AdvertData
 import com.tostech.artisan.data.Chat
+import com.tostech.artisan.data.ChatList
 import com.tostech.artisan.data.UserData
 import com.tostech.artisan.databinding.ActivityMessageChatBinding
 import com.tostech.artisan.notification.*
+import com.tostech.artisan.ui.messages.MessagesFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,9 +58,8 @@ class MessageChatActivity : AppCompatActivity() {
     var seenListener: ValueEventListener? = null
 
     var reference: DatabaseReference? = null
-    var navInboxItem: NavigationMenuItemView? = null
 
-    var apiService: APIService? = null
+
     var topic = ""
 
     var notify = false
@@ -62,17 +71,53 @@ class MessageChatActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_message_chat)
+      /*  val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_message_chat)
         setSupportActionBar(toolbar)
+*/
+     /*   supportActionBar!!.title = ""
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        toolbar.setNavigationOnClickListener {
+           *//* val intent = Intent(this@MessageChatActivity, MainActivity::class.java)
+            intent.putExtra("messages", "messages")
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+            finish()*//*
+            val newFragment = MessagesFragment()
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            transaction.replace(R.id.messageChatLayout, newFragment)
+                .addToBackStack(null)
+                .commit()
+
+        }*/
         val imgBack = binding.imgBack
+        val deleteImage = binding.deleteBtn
+
+        deleteImage.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            builder.apply {
+                setTitle("Delete this chat?")
+               // setIcon(R.drawable.ic_baseline_close_24)
+
+                setMessage("You will loose all your chats with this user")
+                setPositiveButton("Ok") { dialog, id ->
+                    deleteAllChats()
+                   // onBackPressed()
+                }
+                setNegativeButton("Cancel") { dialog, id ->
+                   dialog.cancel()
+                }
+            }.create().show()
 
 
+
+    }
 
         imgBack.setOnClickListener {
             onBackPressed()
 
         }
-        val client = Client()
 
 
 
@@ -132,6 +177,34 @@ class MessageChatActivity : AppCompatActivity() {
         }
 
         seenMessage(userVisit)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try {
+            reference!!.removeEventListener(seenListener!!)
+            status("offline")
+            currentUser("none")
+
+        } catch (ex: NullPointerException){
+            status("offline")
+            currentUser("none")
+            Log.d("removelistener", ex.message.toString())
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            reference!!.removeEventListener(seenListener!!)
+            status("offline")
+            currentUser("none")
+
+        } catch (ex: NullPointerException){
+            status("offline")
+            currentUser("none")
+            Log.d("removelistener", ex.message.toString())
+        }
     }
 
     override fun onPause() {
@@ -282,9 +355,9 @@ class MessageChatActivity : AppCompatActivity() {
 
     private fun sendMessageToUser(senderID: String, receiverID: String?, message: String) {
 
-        val reference = FirebaseDatabase.getInstance().reference
+         reference = FirebaseDatabase.getInstance().reference
 
-        val messageKey = reference.push().key
+        val messageKey = reference!!.push().key
       //  val uid = firebaseUser!!.uid
 
         val messageHashMap = HashMap<String, Any?>()
@@ -295,25 +368,38 @@ class MessageChatActivity : AppCompatActivity() {
        // messageHashMap["url"] = ""
         messageHashMap["messageId"] = messageKey
 
-        reference.child("Chats").child(messageKey!!).setValue(messageHashMap)
+        reference!!.child("Chats").child(messageKey!!).setValue(messageHashMap)
             .addOnCompleteListener { task ->
                 if(task.isSuccessful){
                     val chatListReference = FirebaseDatabase.getInstance()
                         .reference.child("ChatList")
                         .child(firebaseUser!!.uid).child(userVisit!!)
-
-                    chatListReference.child("id").setValue(firebaseUser!!.uid)
+                    val chatListReceiverReference = FirebaseDatabase.getInstance()
+                        .reference.child("ChatList").child(userVisit!!).child(firebaseUser!!.uid)
 
                     chatListReference.addListenerForSingleValueEvent(object : ValueEventListener{
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (!snapshot.exists()) {
                                 chatListReference.child("id").setValue(userVisit)
+                                chatListReceiverReference.child("id").setValue(firebaseUser!!.uid)
+
                             }
 
-                            val chatListReceiverReference = FirebaseDatabase.getInstance()
-                                .reference.child("ChatList").child(userVisit!!).child(firebaseUser!!.uid)
+                        }
 
-                            chatListReceiverReference.child("id").setValue(firebaseUser!!.uid)
+                        override fun onCancelled(error: DatabaseError) {
+
+                        }
+                    })
+
+                   /* val chatListReceiverReference = FirebaseDatabase.getInstance()
+                        .reference.child("ChatList").child(userVisit!!).child(firebaseUser!!.uid)
+*/
+
+                    chatListReceiverReference.addListenerForSingleValueEvent(object : ValueEventListener{
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (!snapshot.exists()) {
+                            }
 
                         }
 
@@ -362,6 +448,57 @@ class MessageChatActivity : AppCompatActivity() {
         } catch(e: Exception) {
             Log.e("noticatch", e.message.toString())
         }
+
+    }
+
+    private fun deleteAllChats() {
+        val firebaseUserID = FirebaseAuth.getInstance().currentUser!!.uid
+        val referenceChat = Firebase.database.reference.child("Chats")
+        val referenceChatList = Firebase.database.reference.child("ChatList").child(firebaseUserID)
+        val referenceChatL = Firebase.database.reference.child("ChatList").child(userVisit)
+
+/*
+        referenceChat!!.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(datasnapshot in snapshot.children){
+                    val chatData = datasnapshot.getValue(Chat::class.java)
+
+                    if((chatData!!.receiver == firebaseUserID && chatData!!.sender == userVisit) ||
+                        (chatData!!.receiver == userVisit && chatData!!.sender == firebaseUserID)){
+                        referenceChat.child(firebaseUserID).ref.removeValue()
+                    }
+                }
+
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })*/
+
+        referenceChatList!!.addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(datasnapshot in snapshot.children){
+                    val chatListData = datasnapshot.getValue(ChatList::class.java)
+
+                    if(chatListData!!.id == userVisit ){
+                        referenceChatList.child(userVisit).removeValue()
+                       // referenceChatList.child(firebaseUserID).removeValue()
+
+                    }
+                }
+
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
+
+
+
 
     }
 }

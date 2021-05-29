@@ -23,8 +23,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentTransaction
+import com.flutterwave.raveandroid.RavePayActivity
+import com.flutterwave.raveandroid.rave_java_commons.RaveConstants
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.internal.NavigationMenuItemView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -35,19 +39,15 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.tostech.artisan.data.Chat
 import com.tostech.artisan.notification.FirebaseService
-import com.tostech.artisan.notification.Token
 import com.tostech.artisan.ui.messages.MessagesFragment
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlin.system.exitProcess
 
  class MainActivity : AppCompatActivity() {
 
+     var databaseRef = Firebase.database.reference
+     var firebaseUserID = Firebase.auth.currentUser?.uid
     private lateinit var appBarConfiguration: AppBarConfiguration
-
- //   var userRef = Firebase.database.reference
-   // var firebaseUser: FirebaseUser? = null
-    //private lateinit var searchView: SearchView
-   // private lateinit var mRecyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,20 +67,8 @@ import kotlin.system.exitProcess
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        val notif = intent.getStringExtra("notification")
 
-        val newFragment = MessagesFragment()
 
-/*       if (notif != null) {
-           if (notif == "notification") {
-               val transaction = supportFragmentManager.beginTransaction()
-               transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-               transaction.replace(R.id.constraint_main, newFragment)
-                   .addToBackStack(null)
-                   .commit()
-           }
-       }
-        Log.v("notifm", "notif is null")*/
         val profpixNav = navView.getHeaderView(0).findViewById<CircleImageView>(R.id.profpix_nav)
         val bus_name_nav = navView.getHeaderView(0).findViewById<TextView>(R.id.bus_name_nav)
         val email_nav = navView.getHeaderView(0).findViewById<TextView>(R.id.email_nav)
@@ -92,6 +80,7 @@ import kotlin.system.exitProcess
 
         val refName = Firebase.database.reference.child("User/$uid/advert/bus_name")
         val pixURL = Firebase.database.reference.child("User/$uid/advert/purl")
+        MobileAds.initialize(this)
 
         FirebaseService.sharedPref = getSharedPreferences("sharedPref",Context.MODE_PRIVATE)
         FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
@@ -138,6 +127,7 @@ import kotlin.system.exitProcess
             }
 
         })
+
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -153,6 +143,7 @@ import kotlin.system.exitProcess
 
     override fun onStart() {
         super.onStart()
+        updateStatus("online")
 
     }
     fun toast(message: String) {
@@ -186,6 +177,16 @@ import kotlin.system.exitProcess
 
         super.onBackPressed()
     }
+
+     override fun onPause() {
+         super.onPause()
+         updateStatus("offline")
+     }
+
+     override fun onResume() {
+         super.onResume()
+         updateStatus("online")
+     }
     fun exitBtn(item: MenuItem){
 
         val builder = AlertDialog.Builder(this)
@@ -207,5 +208,99 @@ import kotlin.system.exitProcess
         builder.show()
     }
 
-    }
+     private fun updateStatus(status: String){
+         //val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+             val ref = FirebaseDatabase.getInstance().reference.child("User").child(firebaseUserID!!).child("advert")
+             val hashMap = HashMap<String, Any>()
+             hashMap["status"] = status
+             ref!!.updateChildren(hashMap)
+
+     }
+     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+         super.onActivityResult(requestCode, resultCode, data)
+
+         Toast.makeText(this, "OnActivity is called", Toast.LENGTH_SHORT).show()
+         if (requestCode == RaveConstants.RAVE_REQUEST_CODE && data != null) {
+             val message = data.getStringExtra("response")
+             if (message != null) {
+                 val ref = databaseRef.child("User/$firebaseUserID/subscribe")
+                 ref.addListenerForSingleValueEvent(object : ValueEventListener {
+                     override fun onDataChange(snapshot: DataSnapshot) {
+                         ref.child(message)
+                     }
+
+                     override fun onCancelled(error: DatabaseError) {
+
+                     }
+                 })
+
+                 // Log.d("rave response", message)
+             }
+             when (resultCode) {
+                 RavePayActivity.RESULT_SUCCESS -> {
+                     Toast.makeText(this, "SUCCESS $message", Toast.LENGTH_SHORT).show()
+                 }
+                 RavePayActivity.RESULT_ERROR -> {
+                     Toast.makeText(this, "ERROR $message", Toast.LENGTH_SHORT).show()
+                 }
+                 RavePayActivity.RESULT_CANCELLED -> {
+                     Toast.makeText(this, "CANCELLED $message", Toast.LENGTH_SHORT)
+                         .show()
+                 }
+             }
+         }else{
+             super.onActivityResult(requestCode, resultCode, data)
+         }
+
+         return super.onActivityResult(requestCode, resultCode, data)
+
+         /* if (resultCode === RaveConstants.RESULT_SUCCESS) {
+              when (requestCode) {
+                  RaveConstants.PIN_REQUEST_CODE -> {
+                      val pin = data!!.getStringExtra(PinFragment.EXTRA_PIN)
+                      // Use the collected PIN
+                      cardPayManager.submitPin(pin)
+                  }
+                  RaveConstants.ADDRESS_DETAILS_REQUEST_CODE -> {
+                      val streetAddress = data!!.getStringExtra(AVSVBVFragment.EXTRA_ADDRESS)
+                      val state = data.getStringExtra(AVSVBVFragment.EXTRA_STATE)
+                      val city = data.getStringExtra(AVSVBVFragment.EXTRA_CITY)
+                      val zipCode = data.getStringExtra(AVSVBVFragment.EXTRA_ZIPCODE)
+                      val country = data.getStringExtra(AVSVBVFragment.EXTRA_COUNTRY)
+                      val address = AddressDetails(streetAddress, city, state, zipCode, country)
+
+                      // Use the address details
+                      cardPayManager.submitAddress(address)
+                  }
+                  RaveConstants.WEB_VERIFICATION_REQUEST_CODE ->                     // Web authentication complete, proceed
+                      cardPayManager.onWebpageAuthenticationComplete()
+                  RaveConstants.OTP_REQUEST_CODE -> {
+                      val otp = data!!.getStringExtra(OTPFragment.EXTRA_OTP)
+                      // Use OTP
+                      cardPayManager.submitOtp(otp)
+                  }
+              }
+          }
+
+          if (requestCode === RaveConstants.RAVE_REQUEST_CODE && data != null) {
+              val message = data.getStringExtra("response")
+              if (message != null) {
+                  Log.d("rave response", message)
+              }
+              if (resultCode === RavePayActivity.RESULT_SUCCESS) {
+                  Toast.makeText(this, "SUCCESS $message", Toast.LENGTH_SHORT).show()
+              } else if (resultCode === RavePayActivity.RESULT_ERROR) {
+                  Toast.makeText(this, "ERROR $message", Toast.LENGTH_SHORT).show()
+              } else if (resultCode === RavePayActivity.RESULT_CANCELLED) {
+                  Toast.makeText(this, "CANCELLED $message", Toast.LENGTH_SHORT).show()
+              }
+          } else if (requestCode === RaveConstants.WEB_VERIFICATION_REQUEST_CODE) {
+              cardPayManager.onWebpageAuthenticationComplete()
+          } else {
+              super.onActivityResult(requestCode, resultCode, data)
+          }*/
+     }
+
+ }
 

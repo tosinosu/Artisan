@@ -20,10 +20,36 @@
             android:id="@+id/nav_order"
             android:icon="@drawable/ic_baseline_reorder_24"
             android:title="@string/order_list" />
+
         <item
-            android:id="@+id/nav_profile"
-            android:icon="@drawable/ic_baseline_person_24"
-            android:title="@string/profile" />
+            android:title="@string/manage_account"
+             >
+        <menu>
+            <group android:checkableBehavior="single"
+                >
+            <item
+                android:id="@+id/nav_profile"
+                android:title="@string/profile"
+                android:icon="@drawable/ic_baseline_account_box_24" />
+            <item
+                android:id="@+id/nav_advert_image"
+                android:title="@string/advert_image"
+                android:icon="@drawable/ic_baseline_dashboard_24" />
+            <item
+                android:id="@+id/nav_subscribe"
+                android:title="@string/subscription"
+                android:icon="@drawable/ic_baseline_payment_24" />
+
+            </group>
+         </menu>
+        </item>
+
+
+<item android:title="">
+            <menu
+                android:checkableBehavior="none"
+                >
+
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_baseline_settings_24"
@@ -37,6 +63,10 @@
             android:icon="@drawable/ic_baseline_exit_to_app_24"
             android:onClick="exitBtn"
             android:title="@string/exit" />
+            </menu>
+</item>
+
+
     </group>
 
 </menu>

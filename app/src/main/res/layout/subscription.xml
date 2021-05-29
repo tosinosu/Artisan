@@ -101,7 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Select Country"
+                android:text="@string/select_country"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/textView14"
@@ -129,13 +129,15 @@
                 app:layout_constraintStart_toStartOf="@+id/textView17"
                 app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
-            <Spinner
+            <TextView
                 android:id="@+id/currencyEt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:textSize="14sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/textView14"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView14"
                 app:layout_constraintTop_toTopOf="@+id/textView14" />
 
@@ -147,7 +149,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/pay"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/amountEt" />
+                app:layout_constraintTop_toBottomOf="@+id/subMonths" />
 
             <TextView
                 android:id="@+id/textView17"
@@ -164,14 +166,36 @@
                 android:id="@+id/amountEt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:ems="10"
+
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/textView17"
-                app:layout_constraintEnd_toEndOf="@+id/currencyEt"
-                app:layout_constraintStart_toEndOf="@+id/textView17"
-                app:layout_constraintStart_toStartOf="@+id/currencyEt"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/countryEt"
                 app:layout_constraintTop_toTopOf="@+id/textView17" />
+
+ <TextView
+                android:id="@+id/textView18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/plan"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView17" />
+
+            <TextView
+                android:id="@+id/subMonths"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textStyle="italic"
+                app:layout_constraintBottom_toBottomOf="@+id/textView18"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textView18"
+                app:layout_constraintStart_toStartOf="@+id/amountEt"
+                app:layout_constraintTop_toTopOf="@+id/textView18" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

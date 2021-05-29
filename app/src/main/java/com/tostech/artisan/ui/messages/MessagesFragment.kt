@@ -18,12 +18,15 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.tostech.artisan.AdapterClasses.AdvertAdapter
-import com.tostech.artisan.data.AdvertData
-import com.tostech.artisan.data.ChatList
 import com.tostech.artisan.databinding.FragmentMessagesBinding
 import com.tostech.artisan.notification.FirebaseService
-import com.tostech.artisan.notification.MyFirebaseInstanceId
-import com.tostech.artisan.notification.Token
+import android.content.Intent
+import android.widget.Toast
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.tostech.artisan.AdapterClasses.MessageAdapter
+import com.tostech.artisan.data.*
+//import com.tostech.artisan.ui.profile.intent
 import kotlinx.android.synthetic.main.fragment_messages.*
 
 
@@ -33,16 +36,17 @@ class MessagesFragment : Fragment() {
     private var _binding: FragmentMessagesBinding? = null
     private val binding get() = _binding!!
 
-    private var advertAdapter: AdvertAdapter? = null
-    private var mUsers: List<AdvertData>? = null
-    private var usersChatList: List<ChatList>? = null
+    private var messageAdapter: MessageAdapter? = null
+    private var mUsers: List<MessageData>? = null
+    private var usersChatList: List<ChatList>? = ArrayList()
+    private var chats: List<Chat>? = ArrayList()
 
     private var firebaseUser: FirebaseUser? = null
     private lateinit var reference: DatabaseReference
     lateinit var recyclerChatList: RecyclerView
 
 
-
+    val gson = Gson()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -52,6 +56,7 @@ class MessagesFragment : Fragment() {
 
         _binding = FragmentMessagesBinding.inflate(inflater, container, false)
          recyclerChatList = _binding!!.recyclerMessages
+        val userVisit = arguments?.getStringArray("visit_id").toString()
 
         recyclerChatList.setHasFixedSize(true)
         recyclerChatList.layoutManager = LinearLayoutManager(context)
@@ -59,8 +64,12 @@ class MessagesFragment : Fragment() {
 
         firebaseUser = FirebaseAuth.getInstance().currentUser
 
-         reference = Firebase.database.reference.child("ChatList").child(firebaseUser!!.uid)
+       // Log.v("userVisist Messa", userVisit!!)
+
         usersChatList = ArrayList()
+        chats = ArrayList()
+
+        val reference = Firebase.database.reference.child("ChatList").child(firebaseUser!!.uid)
 
         reference!!.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -70,13 +79,16 @@ class MessagesFragment : Fragment() {
                     (usersChatList as ArrayList).add(chatlist!!)
                 }
 
+                retrieveChatList()
             }
 
             override fun onCancelled(error: DatabaseError) {
 
             }
     })
-        retrieveChatList()
+
+
+
 
         FirebaseService.sharedPref = requireActivity().getSharedPreferences("sharedPref",Context.MODE_PRIVATE)
         FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
@@ -89,6 +101,8 @@ class MessagesFragment : Fragment() {
 
     private fun  retrieveChatList(){
 
+      //  Log.v("ChatsArray", arrayList.size.toString())
+
         mUsers = ArrayList()
 
         reference = Firebase.database.reference.child("User")
@@ -98,8 +112,7 @@ class MessagesFragment : Fragment() {
                 (mUsers as ArrayList).clear()
 
             for (datasnapshot in snapshot.children){
-                val user = datasnapshot.child("advert").getValue(AdvertData::class.java)
-              // Log.v("snapsh", user.toString())
+                val user = datasnapshot.child("advert").getValue(MessageData::class.java)
 
                 for (eachChat in usersChatList!!){
 
@@ -107,14 +120,15 @@ class MessagesFragment : Fragment() {
                         (mUsers as ArrayList).add(user!!)
                     }
                 }
-            }
+             }
                // Log.v("snapsh", mUsers!!.toString())
                 (mUsers as ArrayList<AdvertData>).asReversed()
                 try {
-                    advertAdapter = AdvertAdapter(context!!, (mUsers as ArrayList<AdvertData>), true)
+                    messageAdapter = MessageAdapter(context!!, (mUsers as ArrayList<MessageData>), true)
 
-                    recyclerChatList.adapter = advertAdapter
-                    recyclerChatList.adapter!!.notifyDataSetChanged()
+                    recyclerChatList.adapter = messageAdapter
+                    recyclerChatList.adapter!!.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.ALLOW
+                  //  recyclerChatList.adapter!!.notifyDataSetChanged()
 
                 } catch (ex: NullPointerException){
                     Log.e("Chat Exception", ex.toString())
@@ -126,8 +140,6 @@ class MessagesFragment : Fragment() {
             }
         })
     }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

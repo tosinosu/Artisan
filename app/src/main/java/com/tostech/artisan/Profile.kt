@@ -1,6 +1,8 @@
 package com.tostech.artisan
 
 import android.content.Context
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -17,16 +19,22 @@ import com.flutterwave.raveandroid.data.Utils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.tostech.artisan.data.AddressData
 import com.tostech.artisan.databinding.ProfileBinding
 import kotlinx.coroutines.*
 import kotlin.concurrent.thread
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import java.lang.RuntimeException
 import java.lang.Thread.yield
 import java.nio.charset.Charset
 import kotlinx.coroutines.yield as yield1
@@ -54,6 +62,11 @@ class Profile: Fragment(), AdapterView.OnItemSelectedListener {
 
         binding.profileBtnOk.setOnClickListener {
             verifyData()
+            try {
+                getLongLat()
+            }catch (ex: RuntimeException){
+                Toast.makeText(context, ex.toString(), Toast.LENGTH_SHORT).show()
+            }
         }
 
         runBlocking {
@@ -62,7 +75,7 @@ class Profile: Fragment(), AdapterView.OnItemSelectedListener {
             }
         }
 
-        val categoryArray = resources.getStringArray(R.array.artisan_names)
+        val categoryArray = resources.getStringArray(R.array.artisanList)
         val adapter = ArrayAdapter(
             requireActivity(),
             R.layout.support_simple_spinner_dropdown_item,
@@ -164,10 +177,11 @@ class Profile: Fragment(), AdapterView.OnItemSelectedListener {
                 GetData().getAdvert(twitter, binding.edTwitter, requireContext())
                 GetData().getAdvert(instagram, binding.edInstagram, requireContext())
                 GetData().getAdvert(other, binding.edtOtherAdd, requireContext())
+                }
             }
-        }
-       //   Log.d("Profile", e.message.toString())
-        }
+
+    }
+
     private fun spinner() {
         val countriesList: ArrayList<String> = ArrayList()
 
@@ -358,11 +372,10 @@ class Profile: Fragment(), AdapterView.OnItemSelectedListener {
     }
 }
 
-    fun verifyData() {
+    private fun verifyData() {
 
         val currentUserId = Firebase.auth.uid.toString()
-        //   val uid = currentUser?.uid.toString()
-        Log.d("USer ID", currentUserId)
+
         val fname: String? = binding.fname.text.toString()
         val lname: String? = binding.lname.text.toString()
         val user: String? = binding.user.text.toString()
@@ -392,18 +405,15 @@ class Profile: Fragment(), AdapterView.OnItemSelectedListener {
 
     val db = Database()
 
-
-
-        //isAmountValid for compulsory fields
         if (fname == null || fname!!.length < 3) {
             valid = false
             binding.fname?.error = "A valid first name is required"
         }
-        if (office!!.length < 7) {
+        if (office!!.length < 5) {
             valid = false
-            binding.edtOfficeAddr?.error = "Minimum of seven characters are required for office address"
+            binding.edtOfficeAddr?.error = "Minimum of five characters are required for office address"
         }
-        if(other!!.length <3){
+        if(other!!.length < 3){
             valid = false
             binding.edtTxtOther?.error = "Enter a valid business"
         }
@@ -422,49 +432,49 @@ class Profile: Fragment(), AdapterView.OnItemSelectedListener {
         }
         if (advert!!.length >= 100){
             valid = false
-            binding.txtInpAdvert?.error = "Maximum of 100 characters exceeded"
+            binding.txtInpAdvert.error = "Maximum of 100 characters exceeded"
         }
 
-        if (lname == null || lname!!.length < 3) {
+        if (lname == null || lname.length < 3) {
             valid = false
-            binding.lname?.error = "A valid last name is required"
+            binding.lname.error = "A valid last name is required"
         }
         if (phone!!.length < 6) {
             valid = false
-            binding.phone?.error = "A valid phone number is required"
+            binding.phone.error = "A valid phone number is required"
         }
 
         if (category == "Choose Business Category"){
             valid = false
             Toast.makeText(context, "Choose business category", Toast.LENGTH_SHORT).show()
         }
-        if (facebook != "" && !facebook!!.contains("facebook.com")){
+        if (facebook != "" && !(!facebook!!.contains("facebook") || facebook.length < 2)){
             valid = false
-            binding.edtFacebook?.error = "Enter your valid facebook url"
+            binding.edtFacebook?.error = "Enter your valid facebook id"
         }
-        if (twitter != "" && !twitter!!.contains("twitter.com")){
+        if (twitter != "" && !(!twitter!!.contains("twitter") || twitter!!.length < 2)){
             valid = false
-            binding.edTwitter?.error = "Enter your valid twitter url"
-        }
-        if (whatsapp != "" && !((whatsapp!!.contains("wa.me")) || whatsapp!!.contains("whatsapp.com"))){
-            valid = false
-            binding.edWhatsapp!!.error = "Enter your valid whatsapp url"
-        }
-        if (instagram != "" && !instagram!!.contains("instagram.com")){
-            valid = false
-            binding.edInstagram.error = "Enter your valid instagram url"
-        }
-        if (other != "" && !facebook!!.contains(".")){
-            valid = false
-            binding.edtOtherAdd!!.error = "Enter your valid url"
+            binding.edTwitter?.error = "Enter your valid twitter id (e.g example)"
         }
 
-        if (valid == false){
-            Toast.makeText(context, "There is an error in your form", Toast.LENGTH_SHORT).show()
+        if (whatsapp != "" && whatsapp!!.contains("+") || !((whatsapp!!.contains("wa.me")) || whatsapp!!.contains("whatsapp.com"))){
+            valid = false
+            binding.edWhatsapp!!.error = "Enter your valid WhatsApp url"
+        }
+        if (instagram != "" && !(instagram!!.contains("instagram") || instagram!!.length < 2)){
+            valid = false
+            binding.edInstagram.error = "Enter your valid instagram id"
+        }
+        if (otherLink != "" && !(otherLink!!.contains("."))){
+            valid = false
+            binding.edtOtherAdd.error = "Enter a valid url"
         }
 
+        if (!valid){
+            Toast.makeText(context, "Error: Please review the form and submit", Toast.LENGTH_SHORT).show()
+        }
 
-        if (valid == true) {
+        if (valid) {
 
             db.writeUser(currentUserId, user, fname, lname, phone)
             db.writeContacts(
@@ -485,6 +495,8 @@ class Profile: Fragment(), AdapterView.OnItemSelectedListener {
 
             Toast.makeText(context, "Data is being saved", Toast.LENGTH_LONG).show()
         }
+
+
 
     }
 
@@ -528,5 +540,39 @@ class Profile: Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
         TODO("Not yet implemented")
+    }
+
+    private fun getLongLat() {
+        val geocoder = Geocoder(context)
+        var location: MutableList<Address>? = null
+
+        firebaseUserID = Firebase.auth.currentUser!!.uid
+
+        val longLat = databaseRef.child("User").child(firebaseUserID).child("contact")
+
+        longLat.addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val addressObj = snapshot.getValue<AddressData>()
+                    val mapAddress =
+                        "${addressObj!!.officeNum}, ${addressObj!!.street}, ${addressObj!!.lga}, ${addressObj!!.state},  ${addressObj!!.country}"
+                    location = geocoder.getFromLocationName(mapAddress, 1)
+                    if (location != null && location!!.size > 0) {
+                        val addressList = location!![0]
+                        val longitude = addressList.longitude
+                        val latitude = addressList.latitude
+
+                        longLat.child("longitude").setValue(longitude)
+                        longLat.child("latitude").setValue(latitude)
+
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
+
+
     }
 }

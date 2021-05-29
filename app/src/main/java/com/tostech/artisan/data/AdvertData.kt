@@ -9,13 +9,3 @@ data class AdvertData (
      var status: String ="",
      var description: String  = ""
 )
-/*
-    constructor(){
-
-    }
-
-    constructor(busName: String, busAdvert: String){
-        this.busName = busName
-        this.busAdvert = busAdvert
-    }
-}*/

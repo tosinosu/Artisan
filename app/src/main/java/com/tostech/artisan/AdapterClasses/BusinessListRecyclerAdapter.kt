@@ -7,28 +7,35 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import kotlin.collections.ArrayList
-import androidx.fragment.app.FragmentActivity
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.tostech.artisan.BusinessListData
 import com.tostech.artisan.GlideApp
 import com.tostech.artisan.R
+import com.tostech.artisan.ui.artisanlist.BusinessListFragment
 import com.tostech.artisan.ui.home.HomeFragment
 import de.hdodenhof.circleimageview.CircleImageView
-import java.lang.NumberFormatException
+
 
 class BusinessListRecyclerAdapter(options: FirebaseRecyclerOptions<BusinessListData>) :
     FirebaseRecyclerAdapter<BusinessListData, BusinessListRecyclerAdapter.BusinessListViewHolder>(
         options
     ) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusinessListViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.artisan_list, parent, false)
+
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): BusinessListViewHolder {
+        val view = LayoutInflater.from(viewGroup.context).inflate(
+            R.layout.artisan_list,
+            viewGroup,
+            false
+        )
         return BusinessListViewHolder(view)
+
+
     }
 
     override fun onBindViewHolder(
@@ -75,7 +82,7 @@ class BusinessListRecyclerAdapter(options: FirebaseRecyclerOptions<BusinessListD
         GlideApp.with(holder.profile_pix.context).load(businessListData.purl).into(holder.profile_pix)
 
 
-        holder.itemView.setOnClickListener(object: View.OnClickListener{
+        holder.itemView.setOnClickListener(object : View.OnClickListener {
 
 
             override fun onClick(v: View?) {
@@ -86,16 +93,22 @@ class BusinessListRecyclerAdapter(options: FirebaseRecyclerOptions<BusinessListD
                 bundle.putString("signInID", itemPosition)
 
 
-                 Log.v("SignInAdapter", itemPosition!!)
+                Log.v("SignInAdapter", itemPosition!!)
 
                 val homeFragment = HomeFragment()
-                homeFragment.arguments =  bundle
-                activity.supportFragmentManager.beginTransaction().replace(R.id.constraint_artisan_list, homeFragment)
+                homeFragment.arguments = bundle
+                activity.supportFragmentManager.beginTransaction().replace(
+                    R.id.constraint_artisan_list,
+                    homeFragment
+                )
                     .addToBackStack(null).commit()
 
             }
         })
+
     }
+
+
 
 
     class BusinessListViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -104,9 +117,12 @@ class BusinessListRecyclerAdapter(options: FirebaseRecyclerOptions<BusinessListD
         val category: TextView? = itemView.findViewById(R.id.category)
         val ratingBar: RatingBar = itemView.findViewById(R.id.ratShow)
         val uid: TextView? = itemView.findViewById(R.id.txt_id)
-
-
     }
+
+    /**
+     * The [AdViewHolder] class.
+     */
+
 
     fun removeAt(position: Int) {
         notifyItemRemoved(position)
@@ -116,15 +132,18 @@ class BusinessListRecyclerAdapter(options: FirebaseRecyclerOptions<BusinessListD
 
 }
 
-class BusinessListRecyclerAdapter2(private val businessListData: List<BusinessListData>) : RecyclerView.Adapter<BusinessListRecyclerAdapter2.ImageViewHolder>() {
+
+class BusinessListRecyclerAdapter2(private val businessListData: List<BusinessListData>) :
+                        RecyclerView.Adapter<BusinessListRecyclerAdapter2.ImageViewHolder>() {
 
     private val TAG: String = "AppDebug"
 
     private var items: List<BusinessListData> = ArrayList()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
+
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ImageViewHolder {
         return ImageViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.artisan_list, parent, false)
+            LayoutInflater.from(viewGroup.context).inflate(R.layout.artisan_list, viewGroup, false)
         )
     }
 
@@ -159,7 +178,7 @@ class BusinessListRecyclerAdapter2(private val businessListData: List<BusinessLi
             .load(businessListData[position].purl)
             .into(holder.profile_pix)
 
-        holder.itemView.setOnClickListener(object: View.OnClickListener{
+        holder.itemView.setOnClickListener(object : View.OnClickListener {
 
 
             override fun onClick(v: View?) {
@@ -173,8 +192,11 @@ class BusinessListRecyclerAdapter2(private val businessListData: List<BusinessLi
                 Log.v("SignInAdapter", itemPosition!!)
 
                 val homeFragment = HomeFragment()
-                homeFragment.arguments =  bundle
-                activity.supportFragmentManager.beginTransaction().replace(R.id.constraint_artisan_list, homeFragment)
+                homeFragment.arguments = bundle
+                activity.supportFragmentManager.beginTransaction().replace(
+                    R.id.constraint_artisan_list,
+                    homeFragment
+                )
                     .addToBackStack(null).commit()
 
             }
@@ -187,7 +209,7 @@ class BusinessListRecyclerAdapter2(private val businessListData: List<BusinessLi
 
 
 
-    class ImageViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val bus_name: TextView = itemView.findViewById(R.id.name)
         val profile_pix: CircleImageView   = itemView.findViewById(R.id.pix)
         val category: TextView  = itemView.findViewById(R.id.category)

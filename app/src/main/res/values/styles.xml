@@ -81,10 +81,84 @@
     <style name="Widget.FastScrollSample.FastScrollerThumb.Colorful">
         <item name="fastScrollerThumbColor">?colorAccent</item>
     </style>
-<!--
 
-    <style name="CustomChatStyle" parent="ChatSDKTheme">
+    <!-- To see how these attributes are used, please visit https://material.io/develop/android/theming/color/ -->
+    <style name="Base.Theme.Sunflower" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/sunflower_green_500</item>
+        <item name="colorOnPrimary">@color/sunflower_yellow_500</item>
+        <item name="colorPrimaryDark">@color/sunflower_green_700</item>
+        <item name="colorOnSurface">@color/sunflower_black</item>
+        <item name="colorAccent">@color/sunflower_green_700</item>
+        <item name="colorSurface">@color/sunflower_gray_50</item>
+        <item name="colorSecondary">@color/sunflower_yellow_500</item>
+        <item name="android:colorBackground">@color/sunflower_green_500</item>
     </style>
--->
+
+    <style name="Theme.Sunflower" parent="Base.Theme.Sunflower"/>
+
+    <style name="Theme.Sunflower.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Sunflower.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+
+    <style name="TextAppearance.Sunflower.Toolbar.Text" parent="TextAppearance.MaterialComponents.Headline5" >
+        <item name="android:textColor">?attr/colorOnSurface</item>
+
+    </style>
+
+
+<!-- For FlutterWave-->
+
+    <style name="TestNewTheme" parent="RaveAppTheme.NoActionBar">
+        <item name="colorPrimary">#092342</item>
+        <item name="colorPrimaryDark">#b71c1c</item>
+        <item name="colorAccent">#7cb342</item>
+        <item name="OTPButtonStyle">@style/otpBtnStyle2</item>
+        <item name="PayButtonStyle">@style/payBtnStyle2</item>
+        <item name="OTPHeaderStyle">@style/otpHeaderStyle2</item>
+        <item name="TabLayoutStyle">@style/tabLayoutStyle2</item>
+        <item name="PinHeaderStyle">@style/pinHeaderStyle2</item>
+        <item name="SavedCardButtonStyle">@style/svdCardsBtnStyle2</item>
+        <item name="PaymentTileStyle">@style/newPaymentTileStyle</item>
+        <item name="PaymentTileTextStyle">@style/newPaymentTileTextStyle</item>
+        <item name="PaymentTileDividerStyle">@style/newPaymentTileDividerStyle</item>
+    </style>
+
+    <style name="newPaymentTileTextStyle">
+        <item name="android:textColor">#4a4a4a</item>
+    </style>
+
+    <style name="newPaymentTileDividerStyle">
+        <item name="android:textColor">#4a4a4a</item>
+    </style>
+
+    <style name="newPaymentTileStyle">
+        <item name="android:background">#99f9a825</item>
+    </style>
+
+    <style name="pinHeaderStyle2">
+        <item name="android:background">#37474f</item>
+    </style>
+
+    <style name="otpBtnStyle2" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/otp_button_curved_2</item>
+        <item name="android:textColor">#009688</item>
+    </style>
+
+    <style name="svdCardsBtnStyle2" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/blue_btn_curved</item>
+        <item name="android:textColor">#039be5</item>
+    </style>
+
+    <style name="payBtnStyle2" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/green_btn_curved</item>
+        <item name="android:textColor">#bcaaa4</item>
+    </style>
+
+
+    <!-- END -->
+
 
 </resources>

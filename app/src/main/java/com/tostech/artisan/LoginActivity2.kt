@@ -172,7 +172,7 @@ class LoginActivity2 : AppCompatActivity() {
     private fun updateUI(user: FirebaseUser?) {
         val intent = Intent(this@LoginActivity2, MainActivity::class.java)
     //    intent.putExtra("user", user)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.flags =Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         finish()
 

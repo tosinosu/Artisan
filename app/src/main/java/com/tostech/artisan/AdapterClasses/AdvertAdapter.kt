@@ -67,7 +67,7 @@ class AdvertAdapter (
 
             holder.itemView.setOnClickListener {
                 val options = arrayOf<CharSequence>(
-                    "View Message",
+                    "Message",
                     "Visit Profile"
 
                 )

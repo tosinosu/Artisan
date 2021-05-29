@@ -1,4 +1,5 @@
 package com.tostech.artisan.data
 
-class CommentData {
-}
+data class CommentData (
+    var text: String? = ""
+)

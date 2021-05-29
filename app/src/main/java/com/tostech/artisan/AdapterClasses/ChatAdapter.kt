@@ -185,8 +185,6 @@ class ChatAdapter (
         init {
             profileImage = itemview.findViewById(R.id.profile_image)
             show_text_message = itemview.findViewById(R.id.show_text_message)
-            /*left_image_message = itemview.findViewById(R.id.left_image_view)*/
-         //   right_image_message = itemview.findViewById(R.id.right_image_view)
             text_seen = itemview.findViewById(R.id.text_seen)
 
         }
@@ -194,9 +192,6 @@ class ChatAdapter (
     }
 
     override fun getItemViewType(position: Int): Int {
-       // return super.getItemViewType(position)
-
-     //   firebaseUser = FirebaseAuth.getInstance().currentUser
 
         return if (mChatList[position].sender.equals(firebaseUser!!.uid)){
             1
@@ -205,8 +200,8 @@ class ChatAdapter (
         }
     }
     private fun deleteSentMessage(position: Int, holder: ViewHolder){
-        val ref = FirebaseDatabase.getInstance().reference.child("Chats")
-            .child(mChatList.get(position).messageID!!)
+         FirebaseDatabase.getInstance().reference.child("Chats")
+            .child(mChatList[position].messageId!!)
             .removeValue()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful){

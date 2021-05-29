@@ -32,7 +32,7 @@ import com.tostech.artisan.MessageChatActivity
 import com.tostech.artisan.R
 import com.tostech.artisan.notification.Constants.Companion.CHANNEL_ID
 import com.tostech.artisan.notification.Constants.Companion.CHANNEL_NAME
-import okhttp3.internal.notify
+//import okhttp3.internal.notify
 import kotlin.random.Random
 
 class FirebaseService : FirebaseMessagingService() {

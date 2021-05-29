@@ -1,9 +1,7 @@
 package com.tostech.artisan
 
-import com.tostech.artisan.notification.APIService
 import com.tostech.artisan.notification.Constants
 import com.tostech.artisan.notification.NotificationApi
-//import com.tostech.artisan.notification.remote.NetworkResponseAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
