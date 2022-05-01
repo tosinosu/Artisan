@@ -3,43 +3,60 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:name="Manage Profile"
+
     >
-<androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:background="@color/app_background"
+            android:id="@+id/coordinator"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:ignore="MergeRootFrame"
+            >
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+
+  <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    >
 
-
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:fitsSystemWindows="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_scrollFlags="scroll|enterAlways"
+        tools:layout_editor_absoluteY="-16dp" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/pix_profile"
         android:layout_width="97dp"
         android:layout_height="118dp"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/passport1_background"
+        android:src="@drawable/ic_baseline_person_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-  <!--  <ScrollView
-        android:id="@+id/constraintProfile"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pix_profile"
-         >
--->
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout12"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_save_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@+id/spinner_categories"
             app:layout_constraintStart_toStartOf="@+id/spinner_categories"
             app:layout_constraintTop_toBottomOf="@+id/spinner_categories">
@@ -48,6 +65,7 @@
                 android:id="@+id/edtTxtOther"
                 android:layout_width="match_parent"
                 android:focusable="true"
+                android:inputType="text"
                 android:layout_height="wrap_content"
                 android:hint="@string/other" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -64,7 +82,11 @@
             android:id="@+id/textInputLayout9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@+id/spinner_cities"
             app:layout_constraintStart_toStartOf="@+id/spinner_cities"
             app:layout_constraintTop_toBottomOf="@+id/spinner_cities">
@@ -73,6 +95,7 @@
                 android:id="@+id/txtInpBusName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text"
                 android:hint="@string/business_name" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -80,6 +103,11 @@
             android:id="@+id/textInputLayout5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@+id/textInputLayout9"
             app:layout_constraintStart_toStartOf="@+id/textInputLayout9"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout9">
@@ -88,7 +116,7 @@
                 android:id="@+id/txtInpAdvert"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
+                android:inputType="textMultiLine|textAutoCorrect"
                 android:maxLength="100"
                 android:hint="@string/business_advert" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -97,6 +125,11 @@
             android:id="@+id/textInputLayout10"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@+id/textInputLayout11"
             app:layout_constraintStart_toStartOf="@+id/textInputLayout11"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout11">
@@ -105,6 +138,7 @@
                 android:id="@+id/edInstagram"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text"
                 android:hint=  "@string/instagram_url" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -112,7 +146,11 @@
             android:id="@+id/textInputLayout8"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@+id/textInputLayout7"
             app:layout_constraintStart_toStartOf="@+id/textInputLayout7"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout7">
@@ -121,6 +159,7 @@
                 android:id="@+id/edTwitter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text"
                 android:hint="@string/twitter_url" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -128,12 +167,18 @@
             android:id="@+id/textInputLayout11"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout8">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edWhatsapp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text"
                 android:hint="@string/whatsapp_url" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -141,16 +186,19 @@
         android:id="@+id/textInputLayout4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pix_profile">
+        app:layout_constraintTop_toBottomOf="@+id/pix_profile"
+      >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clickable="true"
+            android:inputType="text"
             android:hint="@string/username" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -161,6 +209,11 @@
             android:clickable="true"
             android:focusable="true"
             android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
             app:layout_constraintEnd_toEndOf="@+id/textInputLayout4"
             app:layout_constraintStart_toStartOf="@+id/textInputLayout4"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout4"
@@ -170,8 +223,7 @@
                 android:id="@+id/fname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
+                android:inputType="text"
                 android:hint="@string/fname"
                 />
 
@@ -181,7 +233,11 @@
             android:id="@+id/textInputLayout3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
             app:layout_constraintStart_toStartOf="@+id/textInputLayout"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
@@ -190,6 +246,7 @@
                 android:id="@+id/lname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text"
                 android:hint="@string/lname" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -198,7 +255,11 @@
             android:id="@+id/textInputLayout2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@+id/textInputLayout3"
             app:layout_constraintStart_toStartOf="@+id/textInputLayout3"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout3">
@@ -212,16 +273,22 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/profile_btn_ok"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="@string/ok"
-            app:layout_constraintEnd_toEndOf="@+id/txtInputOther"
-            app:layout_constraintTop_toBottomOf="@+id/txtInputOther" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/profile_btn_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:rippleColor="@color/colorAccent"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@color/colorOnSecondary"
+        android:text="@string/submit"
+        app:cornerRadius="3dp"
+        app:layout_constraintEnd_toEndOf="@+id/txtInputOther"
+        app:layout_constraintStart_toStartOf="@+id/txtInputOther"
+        app:layout_constraintTop_toBottomOf="@+id/txtInputOther" />
 
         <Spinner
             android:id="@+id/spinner_country"
@@ -252,7 +319,11 @@
             android:id="@+id/textInputLayout6"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@+id/textInputLayout12"
             app:layout_constraintStart_toStartOf="@+id/textInputLayout12"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout12">
@@ -261,6 +332,7 @@
                 android:id="@+id/edt_office_addr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text"
                 android:hint="Office Address" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -268,7 +340,11 @@
             android:id="@+id/textInputLayout7"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@+id/textInputLayout6"
             app:layout_constraintStart_toStartOf="@+id/textInputLayout6"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout6">
@@ -277,6 +353,7 @@
                 android:id="@+id/edt_facebook"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text"
                 android:hint="Facebook Link" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -284,6 +361,11 @@
             android:id="@+id/txtInputOther"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_edit_24"
+            app:endIconTint="@color/colorPrimary"
+            app:endIconContentDescription="edit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:layout_constraintEnd_toEndOf="@+id/textInputLayout10"
             app:layout_constraintStart_toStartOf="@+id/textInputLayout10"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout10">
@@ -292,28 +374,31 @@
                 android:id="@+id/edt_other_add"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text"
                 android:hint="@string/other_link" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
- <!--   </androidx.constraintlayout.widget.ConstraintLayout>
-&lt;!&ndash;</ScrollView>&ndash;&gt;-->
-
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/upload_profilepix"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/upload"
+        app:rippleColor="@color/colorAccent"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@color/colorOnSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/pix_profile"
         app:layout_constraintTop_toTopOf="@+id/pix_profile" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/delete_profilepix"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/delete"
+        android:backgroundTint="@color/colorError"
+        android:textColor="@color/colorOnSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/pix_profile"
         app:layout_constraintEnd_toEndOf="@+id/upload_profilepix"
         app:layout_constraintHorizontal_bias="0.52"
@@ -322,4 +407,8 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 </layout>

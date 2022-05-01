@@ -3,14 +3,22 @@ package com.tostech.artisan
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+//import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import com.flutterwave.raveandroid.RavePayActivity
 import com.flutterwave.raveandroid.RaveUiManager
 import com.flutterwave.raveandroid.data.Utils
@@ -20,21 +28,41 @@ import com.flutterwave.raveandroid.rave_java_commons.SubAccount
 import com.flutterwave.raveandroid.rave_presentation.FeeCheckListener
 import com.flutterwave.raveandroid.rave_presentation.card.CardPaymentCallback
 import com.flutterwave.raveandroid.rave_presentation.card.SavedCardsListener
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
+import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
+import com.tostech.artisan.data.SubscriptionData
 import com.tostech.artisan.databinding.SubscriptionBinding
+import org.json.JSONException
+import java.io.IOException
+import java.nio.charset.Charset
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
-class Subscription: Fragment(){
+class Subscription: Fragment() {
 
-    private lateinit var binding: SubscriptionBinding
-
+    private var _binding: SubscriptionBinding? = null
+    private val binding get() = _binding!!
     var databaseRef = Firebase.database.reference
     var meta: List<Meta> = ArrayList()
+    lateinit var mActivity: FragmentActivity
+
     var progressDialog: ProgressDialog? = null
 
     var subAccounts: List<SubAccount> = ArrayList()
@@ -56,7 +84,7 @@ class Subscription: Fragment(){
     var phoneNumberEt: EditText? = null
     var durationEt: EditText? = null
     var frequencyEt: EditText? = null
-    var startPayBtn: Button? = null
+    var startPayBtn: MaterialButton? = null
     var subPlan: TextView? = null
 
     var country = listOf("Nigeria (Naira)", "Other Countries (US Dollars)")
@@ -70,10 +98,8 @@ class Subscription: Fragment(){
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.subscription, container, false)
-
-        val act = requireActivity().baseContext.toString()
-        Toast.makeText(context, act, Toast.LENGTH_SHORT).show()
+        _binding = SubscriptionBinding.inflate(inflater, container, false)
+        setUpToolbar()
 
          emailEt = binding.emailEt
          amountEt = binding.amountEt
@@ -84,6 +110,7 @@ class Subscription: Fragment(){
          lNameEt = binding.lnameEt
          phoneNumberEt = binding.phoneNumberEt
         subPlan = binding.subMonths
+        startPayBtn = binding.startPayBtn
 
 
         val countryAdapter = ArrayAdapter(
@@ -121,23 +148,21 @@ class Subscription: Fragment(){
         }
 
 
-
-        binding.startPaymentBtn.setOnClickListener {
+        getSubDetails()
+        startPayBtn!!.setOnClickListener {
             validateEntries()
-        }
+
+    }
 
         return binding.root
 
 
     }
 
-
-/*    private fun clear() {
-        subAccounts.clear()
-        vendorListTXT!!.text = "Your current vendor refs are: "
-        addSubaccountsLayout!!.visibility = View.GONE
-        addSubAccountsSwitch.setChecked(false)
-    }*/
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 
     private fun validateEntries() {
         clearErrors()
@@ -206,8 +231,6 @@ class Subscription: Fragment(){
         amount: String,
         currency: String
     ){
-
-
         val ravePay = RaveUiManager(this).apply {
             acceptMpesaPayments(false)
             acceptAccountPayments(true)
@@ -224,7 +247,7 @@ class Subscription: Fragment(){
             acceptBankTransferPayments(false)
             acceptUssdPayments(true)
             acceptBarterPayments(false)
-            //withTheme(R.style.TestNewTheme)
+          //  withTheme(R.style.TestNewTheme)
             showStagingLabel(true)
             setAmount(amount.toDouble())
             setCurrency(currency)
@@ -233,10 +256,10 @@ class Subscription: Fragment(){
             setlName(lName)
             setPhoneNumber(phoneNumber, true)
             setNarration(narration)
-            setPublicKey("FLWPUBK_TEST-1b28a4b97c230106164e2d15060eb931-X")
-            setEncryptionKey("FLWSECK_TEST8e2f00f82e1e")
+            setPublicKey("FLWPUBK-2ea91acb74b7437f9a168ed5071777b5-X")
+            setEncryptionKey("6db402949f37765bed3af5d1")
             setTxRef(txRef)
-            onStagingEnv(true)
+            onStagingEnv(false)
             isPreAuth(false)
             // setMeta()
             shouldDisplayFee(false)
@@ -244,91 +267,89 @@ class Subscription: Fragment(){
             ravePay.initialize()
         }
 
-    /* override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-         super.onActivityResult(requestCode, resultCode, data)
+    private fun getSubDetails(){
 
-         Toast.makeText(context, "OnActivity is called", Toast.LENGTH_SHORT).show()
-        if (requestCode == RaveConstants.RAVE_REQUEST_CODE && data != null) {
-            val message = data.getStringExtra("response")
-            if (message != null) {
-                val ref = databaseRef.child("User/$firebaseUserID/subscribe")
-                    ref.addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            ref.child(message)
+            val ref = databaseRef.child("User/$firebaseUserID/subscribe")
+                ref.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            val subData = snapshot.getValue<SubscriptionData>()
+                            val subCreated = subData!!.createdAt
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                                Log.d("ExpDate", subCreated.toString())
+
+                                val formatter =
+                                    LocalDateTime.parse(subCreated, DateTimeFormatter.ISO_DATE_TIME)
+                                val formattedDate= formatter.format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm"))
+                                val subExpire = formatter.plusMonths(3)
+                                val currentDate = LocalDateTime.now()
+  //                              Log.d("ExpDate", subExpire.toString())
+
+                                if (subData!!.status == "successful" && currentDate <= subExpire) {
+                                    binding.subscription.text = "active"
+                                    binding.subscription.setTextColor(Color.GREEN)
+                                    binding.date.setTextColor((resources.getColor(R.color.colorPrimary)))
+                                    binding.expiration.setTextColor((resources.getColor(R.color.colorPrimary)))
+
+
+                                } else {
+                                    binding.subscription.text = "inactive"
+                                    binding.subscription.setTextColor(Color.RED)
+                                    binding.date.setTextColor(Color.RED)
+                                    binding.expiration.setTextColor(Color.RED)
+                                    databaseRef.child("User/$firebaseUserID/sub_status").setValue(3)
+
+                                }
+                                binding.date.text = formattedDate
+                                //binding.expiration.text = subExpire.toString()
+                            }
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                                val parser = SimpleDateFormat(("yyyy-MM-dd'T'HH:mm:ss'.000Z'"), Locale.getDefault())
+                                val parser2 = SimpleDateFormat(("yyyy-MM-dd'T'HH:mm:ss"), Locale.getDefault())
+                                val formatter = SimpleDateFormat(("yyyy-MM-dd HH:mm:ss"), Locale.getDefault())
+    //                            Log.d("CurDate", subCreated.toString())
+                                val output = parser.parse(subCreated!!)!!
+//                                Log.d("output", output.toString())
+
+
+                                val cal = Calendar.getInstance()
+                                val currentCalenderDate = Calendar.getInstance().time
+
+                                cal.time = output
+                                cal.add(Calendar.MONTH, 3)
+                                val expireCalendarDate = cal.time
+  //                              Log.d("ExpDate", expireCalendarDate.toString())
+
+                                if (subData!!.status == "successful" && currentCalenderDate <= expireCalendarDate) {
+                                    binding.subscription.text = "active"
+                                    binding.subscription.setTextColor(Color.GREEN)
+                                    binding.date.setTextColor((resources.getColor(R.color.colorPrimary)))
+                                    binding.expiration.setTextColor((resources.getColor(R.color.colorPrimary)))
+
+                                } else {
+                                    binding.subscription.text = "inactive"
+                                    binding.subscription.setTextColor(Color.RED)
+                                    binding.date.setTextColor(Color.RED)
+                                    binding.expiration.setTextColor(Color.RED)
+
+                                    databaseRef.child("User/$firebaseUserID/sub_status").setValue(3)
+
+                                }
+                                binding.date.text = formatter.format(output)
+                              //  binding.expiration.text = formatter.format(expireCalendarDate)
+
+                            }
                         }
 
-                        override fun onCancelled(error: DatabaseError) {
+                    }
 
-                        }
-                    })
+                    override fun onCancelled(error: DatabaseError) {
 
-               // Log.d("rave response", message)
-            }
-            when (resultCode) {
-                RavePayActivity.RESULT_SUCCESS -> {
-                    Toast.makeText(requireContext(), "SUCCESS $message", Toast.LENGTH_SHORT).show()
-                }
-                RavePayActivity.RESULT_ERROR -> {
-                    Toast.makeText(requireContext(), "ERROR $message", Toast.LENGTH_SHORT).show()
-                }
-                RavePayActivity.RESULT_CANCELLED -> {
-                    Toast.makeText(requireContext(), "CANCELLED $message", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        }else{
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-
-         return super.onActivityResult(requestCode, resultCode, data)
-
-         *//* if (resultCode === RaveConstants.RESULT_SUCCESS) {
-              when (requestCode) {
-                  RaveConstants.PIN_REQUEST_CODE -> {
-                      val pin = data!!.getStringExtra(PinFragment.EXTRA_PIN)
-                      // Use the collected PIN
-                      cardPayManager.submitPin(pin)
-                  }
-                  RaveConstants.ADDRESS_DETAILS_REQUEST_CODE -> {
-                      val streetAddress = data!!.getStringExtra(AVSVBVFragment.EXTRA_ADDRESS)
-                      val state = data.getStringExtra(AVSVBVFragment.EXTRA_STATE)
-                      val city = data.getStringExtra(AVSVBVFragment.EXTRA_CITY)
-                      val zipCode = data.getStringExtra(AVSVBVFragment.EXTRA_ZIPCODE)
-                      val country = data.getStringExtra(AVSVBVFragment.EXTRA_COUNTRY)
-                      val address = AddressDetails(streetAddress, city, state, zipCode, country)
-
-                      // Use the address details
-                      cardPayManager.submitAddress(address)
-                  }
-                  RaveConstants.WEB_VERIFICATION_REQUEST_CODE ->                     // Web authentication complete, proceed
-                      cardPayManager.onWebpageAuthenticationComplete()
-                  RaveConstants.OTP_REQUEST_CODE -> {
-                      val otp = data!!.getStringExtra(OTPFragment.EXTRA_OTP)
-                      // Use OTP
-                      cardPayManager.submitOtp(otp)
-                  }
-              }
-          }
-
-          if (requestCode === RaveConstants.RAVE_REQUEST_CODE && data != null) {
-              val message = data.getStringExtra("response")
-              if (message != null) {
-                  Log.d("rave response", message)
-              }
-              if (resultCode === RavePayActivity.RESULT_SUCCESS) {
-                  Toast.makeText(this, "SUCCESS $message", Toast.LENGTH_SHORT).show()
-              } else if (resultCode === RavePayActivity.RESULT_ERROR) {
-                  Toast.makeText(this, "ERROR $message", Toast.LENGTH_SHORT).show()
-              } else if (resultCode === RavePayActivity.RESULT_CANCELLED) {
-                  Toast.makeText(this, "CANCELLED $message", Toast.LENGTH_SHORT).show()
-              }
-          } else if (requestCode === RaveConstants.WEB_VERIFICATION_REQUEST_CODE) {
-              cardPayManager.onWebpageAuthenticationComplete()
-          } else {
-              super.onActivityResult(requestCode, resultCode, data)
-          }*//*
+                    }
+                })
     }
-*/
+
     private fun clearErrors() {
         emailEt?.error = null
         amountEt?.error = null
@@ -344,6 +365,113 @@ class Subscription: Fragment(){
         frequencyEt?.error = null
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        activity?.let { mActivity = it}
+
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val hashMapSubscription = HashMap<String, String?>()
+        if (requestCode == RaveConstants.RAVE_REQUEST_CODE && data != null) {
+            val message = data.getStringExtra("response")
+//            Log.d("SubData", message!!)
+
+            try{
+                val jsonElement = JsonParser.parseString(message)
+                val jObj = jsonElement.asJsonObject
+                val  jObject = jObj.getAsJsonObject("data")
+
+                // Fetch id store it in variable
+                val id = jObject.get("id").asString
+                val createdAt = jObject.get("createdAt").asString
+                val amount = jObject.get("amount").asString
+                val charged_amount = jObject.get("charged_amount").asString
+                val AccountId = jObject.get("AccountId").asString
+                val orderRef = jObject.get("orderRef").asString
+                val flwRef = jObject.get("flwRef").asString
+                val narration = jObject.get("narration").asString
+                val chargeResponseCode = jObject.get("chargeResponseCode").asString
+                val appfee = jObject.get("appfee").asString
+                val status = jObject.get("status").asString
+                val updatedAt = jObject.get("updatedAt").asString
+              //  val phone = jObject.get("customer.phone").asString
+               // val fullname = jObject.get("customer.fullName").asString
+                //val email = jObject.get("customer.email").asString
+                val fraud_status = jObject.get("fraud_status").asString
+
+
+                hashMapSubscription["id"] = id
+                hashMapSubscription["AccountId"] = AccountId
+                hashMapSubscription["amount"] = amount
+                hashMapSubscription["charged_amount"] = charged_amount
+                hashMapSubscription["orderRef"] = orderRef
+                hashMapSubscription["flwRef"] = flwRef
+                hashMapSubscription["chargeResponseCode"] = chargeResponseCode
+                hashMapSubscription["narration"] = narration
+                hashMapSubscription["createdAt"] = createdAt
+                hashMapSubscription["appfee"] = appfee
+                hashMapSubscription["status"] = status
+                hashMapSubscription["updatedAt"] = updatedAt
+              //  hashMapSubscription["phone"] = phone
+               // hashMapSubscription["fullname"] = fullname
+                //hashMapSubscription["email"] = email
+                hashMapSubscription["fraud_status"] = fraud_status
+
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            } catch (ex: NullPointerException){
+                ex.printStackTrace()
+            }
+
+            if (message != null) {
+
+                val ref = databaseRef.child("User/$firebaseUserID/subscribe")
+
+                ref.setValue(hashMapSubscription)
+            }
+            when (resultCode) {
+                RavePayActivity.RESULT_SUCCESS -> {
+                    if (firebaseUserID != null) {
+                        databaseRef.child("User").child(firebaseUserID).child("sub_status").setValue(2).addOnSuccessListener {
+                            Toast.makeText(requireContext(), "PAYMENT SUCCESSFULLY MADE", Toast.LENGTH_SHORT).show()
+                        }
+                    }else{
+                        Toast.makeText(requireContext(), "PLEASE REGISTER", Toast.LENGTH_SHORT).show()
+
+                    }
+                }
+                RavePayActivity.RESULT_ERROR -> {
+                    Toast.makeText(requireContext(), "PAYMENT NOT SUCCESSFUL", Toast.LENGTH_SHORT).show()
+                }
+                RavePayActivity.RESULT_CANCELLED -> {
+                    Toast.makeText(requireContext(), "PAYMENT CANCELLED", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }else{
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+
+        return super.onActivityResult(requestCode, resultCode, data)
+
+    }
+
+    private fun setUpToolbar() {
+        val mainActivity = mActivity as MainActivity
+        val  navigationView : NavigationView? = mActivity.findViewById(R.id.nav_view)
+        mainActivity.setSupportActionBar(binding.toolbar)
+        val navController = NavHostFragment.findNavController(this)
+        val appBarConfiguration =  mainActivity.appBarConfiguration
+        NavigationUI.setupActionBarWithNavController(mainActivity, navController, appBarConfiguration!!)
+        NavigationUI.setupWithNavController(navigationView!!,navController)
+
+        setHasOptionsMenu(true)
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpToolbar()
+    }
 
    /* fun showProgressIndicator(active: Boolean) {
         try {

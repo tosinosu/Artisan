@@ -128,7 +128,7 @@ private fun sendNotification(remoteMessage: RemoteMessage) {
     val builder: NotificationCompat.Builder? = NotificationCompat.Builder(this, CHANNEL_ID).apply {
         setContentIntent(resultPendingIntent)
         setContentTitle(title)
-        setSmallIcon(R.drawable.ic_baseline_notifications_24)
+        setSmallIcon(R.drawable.app_logo_foreground)
         setContentText(body)
         setSound(defaultSound)
         setContentIntent(pendingIntent)
@@ -198,7 +198,7 @@ private fun sendOreoNotification(remoteMessage: RemoteMessage) {
         val notifBuilder = Notification.Builder(applicationContext, CHANNEL_ID).apply {
             setContentIntent(resultPendingIntent)
             setContentTitle(title)
-            setSmallIcon(R.drawable.ic_baseline_notifications_24)
+            setSmallIcon(R.drawable.app_logo_foreground)
             setContentText(body)
             setAutoCancel(true)
         }

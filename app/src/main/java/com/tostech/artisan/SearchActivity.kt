@@ -3,16 +3,18 @@ package com.tostech.artisan
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.SearchRecentSuggestions
-import android.util.Log
+//import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
 import androidx.navigation.ui.AppBarConfiguration
@@ -43,24 +45,25 @@ class SearchActivity :  AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-       // val toolbar: Toolbar = findViewById(R.id.toolbarSearch)
-        //toolbar.setTitleTextColor(Color.WHITE)
-//        setSupportActionBar(toolbar)
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        toolbar.title = "Search"
+        toolbar.setTitleTextColor(Color.WHITE)
 
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        searchArray = ArrayList()
+
+
+         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
 
-       // supportActionBar?.title = "Search"
+
+
 
         mRecyclerView = findViewById(R.id.search_recycler)
-        userRef = FirebaseDatabase.getInstance().reference.child("User")
-        searchArray = ArrayList<SearchData>()
-
         handleIntent(intent)
-
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -69,23 +72,35 @@ class SearchActivity :  AppCompatActivity() {
         return true
     }
 
-    private fun handleIntent(intent: Intent){
+    private fun handleIntent(intent: Intent) {
+    /*    when (intent.action) {
+            Intent.ACTION_SEND -> {
+                if ("text/plain" == intent.type) {
+                    intent.getStringExtra(Intent.EXTRA_TEXT)?.let { intentQuery ->
+                        SearchRecentSuggestions(this, SearchSuggestion.AUTHORITY, SearchSuggestion.MODE)
+                            .saveRecentQuery(intentQuery, null)
+                        searchForUsers(intentQuery)
+                    }
+                }
+            }*/
+        if (Intent.ACTION_SEARCH == intent.action) {
 
-        if (Intent.ACTION_SEARCH == intent.action){
- //           val query = intent.getStringExtra(SearchManager.QUERY)
-
-            intent.getStringExtra(SearchManager.QUERY)?.also {query ->
-                SearchRecentSuggestions(this, SearchSuggestion.AUTHORITY, SearchSuggestion.MODE)
-                    .saveRecentQuery(query, null)
-                searchForUsers(query)
+                intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+                    //Log.d("queryis", query)
+                    SearchRecentSuggestions(this, SearchSuggestion.AUTHORITY, SearchSuggestion.MODE)
+                        .saveRecentQuery(query, null)
+                    searchForUsers(query)
+                }
             }
-        }
+      //  }
     }
-
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
+
         setIntent(intent)
-        intent?.let { handleIntent(it) }
+        intent?.let {
+            handleIntent(it)
+        }
     }
 
 
@@ -113,49 +128,51 @@ class SearchActivity :  AppCompatActivity() {
     }
     private fun searchForUsers(str:String?){
         val myList: ArrayList<SearchData> = ArrayList()
+        userRef = FirebaseDatabase.getInstance().reference.child("User")
 
-        if (userRef != null) {
-            userRef.addValueEventListener(object : ValueEventListener {
+        userRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    myList.clear()
+                    if (!searchArray.isNullOrEmpty())
+                          searchArray!!.clear()
+                    for (currentSnapshot in snapshot.children) {
+                        val user =
+                            currentSnapshot.child("advert").getValue(SearchData::class.java)
+                        try {
+                            searchArray!!.add(user!!)
 
-
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        myList.clear()
-                        searchArray.clear()
-                        for (currentSnapshot in snapshot.children) {
-                            val user =
-                                currentSnapshot.child("advert").getValue(SearchData::class.java)
-
-                                searchArray.add(user!!)
-
+                        } catch (ex: NullPointerException){
+                      //      Log.d("SearchActivityDebug", ex.message.toString())
                         }
-
                     }
-                    for(searchObj in searchArray){
-                        if (searchObj.bus_name.toLowerCase().contains(str!!.toLowerCase())){
+                    for(searchObj in searchArray!!){
+                        if (searchObj.bus_name!!.toLowerCase().contains(str!!.toLowerCase())){
                             myList.add(searchObj)
                         }
                     }
+                    if (myList.isEmpty()){
+                        toast("Query not found")
 
+                    }else {
 
+                        mRecyclerView.apply {
+                            layoutManager = LinearLayoutManager(context)
+                            val itemsDecoration = ItemDecoration(2)
+                            addItemDecoration(itemsDecoration)
+                            searchRecyclerAdapter = SearchRecyclerAdapter2(myList)
+                            mRecyclerView.adapter = searchRecyclerAdapter
+                        }
+                    }
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-            })
+            }
 
-        }
-        Log.v("searchhh", myList.toString())
-        Log.v("searchhh", searchArray.size.toString())
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
 
-        mRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            val itemsDecoration = ItemDecoration(2)
-            addItemDecoration(itemsDecoration)
-            searchRecyclerAdapter = SearchRecyclerAdapter2(myList)
-            mRecyclerView.adapter = searchRecyclerAdapter
-        }
+
 
     }
     override fun onStart() {
@@ -186,11 +203,6 @@ class SearchActivity :  AppCompatActivity() {
                                 snapshot.child("advert/bus_name").value.toString(),
                                 snapshot.child("advert/category").value.toString()
                             )
-                            Log.v("searchdebu", searchText)
-                            Log.v("searchdebu", snapshot.value.toString())
-                            Log.v("searchdebu", snapshot.child("advert/purl").value.toString())
-                            Log.v("search", snapshot.child("advert/bus_name").value.toString())
-                            Log.v("search", snapshot.child("advert/category").value.toString())
 
                             return searchData
                         }
@@ -207,6 +219,7 @@ class SearchActivity :  AppCompatActivity() {
             }
         }
     }
+
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

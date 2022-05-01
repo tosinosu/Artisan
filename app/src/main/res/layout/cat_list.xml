@@ -16,9 +16,9 @@
     <com.tostech.artisan.views.MaskedCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_side_margin"
+        android:layout_marginStart="2dp"
         android:layout_marginEnd="@dimen/card_side_margin"
-        android:layout_marginBottom="@dimen/card_bottom_margin"
+        android:layout_marginBottom="4dp"
         android:onClick="@{clickListener}"
         app:cardElevation="@dimen/card_elevation"
         app:cardPreventCornerOverlap="false"
@@ -26,32 +26,29 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+
+            >
+<!--
 
             <ImageView
-                android:id="@+id/cat_item_image"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/plant_item_image_height"
-
-                android:scaleType="centerCrop"
-
-                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/cat_item_image_list"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="fitXY"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+-->
 
             <TextView
                 android:id="@+id/cat_item_title"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_normal"
-                android:layout_marginTop="@dimen/margin_normal"
+                android:layout_height="50dp"
+                android:gravity="center"
                 android:textAppearance="?attr/textAppearanceListItem"
-                android:gravity="center_horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cat_item_image"
-                app:layout_constraintBottom_toBottomOf="parent"
-                />
+                app:layout_constraintTop_toTopOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

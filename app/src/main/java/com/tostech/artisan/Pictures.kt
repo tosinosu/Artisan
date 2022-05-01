@@ -1,9 +1,11 @@
 package com.tostech.artisan
 
+import android.Manifest
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentUris
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -20,7 +22,7 @@ import android.os.Environment
 import android.os.Handler
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.util.Log
+//import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,10 +35,14 @@ import androidx.core.content.FileProvider
 import androidx.core.widget.ContentLoadingProgressBar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -47,21 +53,23 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
 import com.tostech.artisan.databinding.LogoBinding
+import com.tostech.artisan.databinding.SubscriptionBinding
+import com.tostech.artisan.utils.checkSelfPermissionCompat
+import com.tostech.artisan.utils.requestPermissionsCompat
+import com.tostech.artisan.utils.shouldShowRequestPermissionRationaleCompat
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.lang.Exception
 
 class Pictures: Fragment() {
 
-    private lateinit var binding: LogoBinding
-
+    private var _binding: LogoBinding? = null
+    private val binding get() = _binding!!
+    lateinit var mActivity: FragmentActivity
     private var mUri: Uri? = null
     private val OPERATION_CAPTURE_PHOTO = 1
     private val OPERATION_CHOOSE_PHOTO = 2
     private var uid: String? = null
-
-
-
 
     // Create a storage reference from our app
     var storageRef = Firebase.storage.reference
@@ -75,7 +83,8 @@ class Pictures: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.logo, container, false)
+        _binding = LogoBinding.inflate(inflater, container, false)
+        setUpToolbar()
          uid = Firebase.auth.currentUser?.uid
         val db = Database()
         loadAdvetImages()
@@ -149,29 +158,33 @@ class Pictures: Fragment() {
         return binding.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
     fun loadAdvetImages(){
 
          storageRef.child("$uid/images/logo.jpg").downloadUrl.addOnSuccessListener (object : OnSuccessListener<Uri>{
              override fun onSuccess(uri: Uri?) {
-                 context?.let { Glide.with(it).load(uri.toString()).apply(RequestOptions().placeholder(R.drawable.ic_baseline_person_24)).into(binding.imageView1) }
+                 requireContext().let { Glide.with(it).load(uri.toString()).apply(RequestOptions().placeholder(R.drawable.ic_baseline_person_24)).into(binding.imageView1) }
 
              }
 
          }).addOnFailureListener(object : OnFailureListener {
              override fun onFailure(ex: Exception) {
-                 Toast.makeText(context, "An error has occured", Toast.LENGTH_SHORT).show()
+              //   Toast.makeText(requireContext(), "An error has occured", Toast.LENGTH_SHORT).show()
              }
 
          })
          storageRef.child("$uid/images/advert1.jpg").downloadUrl.addOnSuccessListener (object : OnSuccessListener<Uri>{
              override fun onSuccess(uri: Uri?) {
-                 context?.let { Glide.with(it).load(uri.toString()).apply(RequestOptions().placeholder(R.drawable.ic_baseline_person_24)).into(binding.imageView2) }
+                 requireContext().let { Glide.with(it).load(uri.toString()).apply(RequestOptions().placeholder(R.drawable.ic_baseline_person_24)).into(binding.imageView2) }
 
              }
 
          }).addOnFailureListener(object : OnFailureListener {
              override fun onFailure(ex: Exception) {
-                 Toast.makeText(context, "An error has occured", Toast.LENGTH_SHORT).show()
+               //  Toast.makeText(requireContext(), "An error has occured", Toast.LENGTH_SHORT).show()
              }
 
          })
@@ -183,7 +196,7 @@ class Pictures: Fragment() {
 
          }).addOnFailureListener(object : OnFailureListener {
              override fun onFailure(ex: Exception) {
-                 Toast.makeText(context, "An error has occured", Toast.LENGTH_SHORT).show()
+             //    Toast.makeText(requireContext(), "An error has occured", Toast.LENGTH_SHORT).show()
              }
 
          })
@@ -195,7 +208,7 @@ class Pictures: Fragment() {
 
          }).addOnFailureListener(object : OnFailureListener {
              override fun onFailure(ex: Exception) {
-                 Toast.makeText(context, "An error has occured", Toast.LENGTH_SHORT).show()
+              //   Toast.makeText(requireContext(), "An error has occured", Toast.LENGTH_SHORT).show()
              }
 
          })
@@ -207,7 +220,7 @@ class Pictures: Fragment() {
 
          }).addOnFailureListener(object : OnFailureListener {
              override fun onFailure(ex: Exception) {
-                 Toast.makeText(context, "An error has occured", Toast.LENGTH_SHORT).show()
+               //  Toast.makeText(requireContext(), "An error has occured", Toast.LENGTH_SHORT).show()
              }
 
          })
@@ -219,7 +232,7 @@ class Pictures: Fragment() {
 
          }).addOnFailureListener(object : OnFailureListener {
              override fun onFailure(ex: Exception) {
-                 Toast.makeText(context, "An error has occured", Toast.LENGTH_SHORT).show()
+              //   Toast.makeText(context, "An error has occured", Toast.LENGTH_SHORT).show()
              }
 
          })
@@ -240,7 +253,7 @@ class Pictures: Fragment() {
             .setNegativeButton(
                 "Gallery",
                 DialogInterface.OnClickListener { dialogInterface, i ->
-                    val checkSelfPermission = ContextCompat.checkSelfPermission(
+          /*          val checkSelfPermission = ContextCompat.checkSelfPermission(
                         requireContext(),
                         android.Manifest.permission.READ_EXTERNAL_STORAGE
                     )
@@ -252,9 +265,10 @@ class Pictures: Fragment() {
                             arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 1
                         )
                     } else {
-                        Log.v("PErmission", "Inside open gallery")
-                        openGallery(imageNumber)
-                    }
+                        Log.v("PErmission", "Inside open gallery")*/
+                       // openGallery(imageNumber)
+                    showGalleryPreview(imageNumber)
+                //    }
                 })
 
         builder.create().show()
@@ -286,12 +300,10 @@ class Pictures: Fragment() {
 
                 var uploadTask = spaceRef.putBytes(data)
                 uploadTask.addOnFailureListener { ex ->
-                    Log.d("ImageLog", ex.message.toString())
+                //    Log.d("ImageLog", ex.message.toString())
                 }.addOnSuccessListener { taskSnapshot ->
                     // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-                    Log.d("ImageLog", taskSnapshot.bytesTransferred.toString() + " uploaded")
-
-
+                  //  Log.d("ImageLog", taskSnapshot.bytesTransferred.toString() + " uploaded")
                     if (buttonNum == "logo") {
                         binding.textView5.setText("Logo uploaded successfully")
                         binding.textView5.setTextColor(Color.GREEN)
@@ -408,7 +420,7 @@ class Pictures: Fragment() {
         intent = Intent("android.intent.action.GET_CONTENT")
         intent.type = "image/*"
         intent.putExtra("imageView", imageView)
-        Log.v("getintent", intent.getStringExtra("imageView")!!)
+        //Log.v("getintent", intent.getStringExtra("imageView")!!)
 
         startActivityForResult(intent, OPERATION_CHOOSE_PHOTO)
     }
@@ -537,27 +549,25 @@ class Pictures: Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantedResults)
 
         val value = intent.getStringExtra("imageView")
-        Log.v("getintentonrequest", value!!)
+        //Log.v("getintentonrequest", value!!)
 
         when (requestCode) {
-            1 ->
+            OPERATION_CHOOSE_PHOTO ->
                 if (grantedResults.isNotEmpty() && grantedResults.get(0) ==
                     PackageManager.PERMISSION_GRANTED
                 ) {
                     openGallery(value!!)
                 } else {
-                    show("Unfortunately You are Denied Permission to Perform this Operataion.")
+                    show("No permission to perform this operation")
                 }
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-
         val imagetype = intent.getStringExtra("imageView")
 
-        Log.v("getIntentOnActivity", imagetype!!)
+        //Log.v("getIntentOnActivity", imagetype!!)
 
         if (imagetype == "imageView1") {
             when (requestCode) {
@@ -690,6 +700,41 @@ class Pictures: Fragment() {
 
         return inSampleSize
     }
+    private fun showGalleryPreview(imageNumber: String?) {
+        // Check if the Camera permission has been granted
+        if (checkSelfPermissionCompat(Manifest.permission.READ_EXTERNAL_STORAGE) ==
+            PackageManager.PERMISSION_GRANTED) {
+            // Permission is already available, start camera preview
+            // layout.showSnackbar(R.string.camera_permission_available, Snackbar.LENGTH_SHORT)
+            openGallery(imageNumber!!)
+        } else {
+            // Permission is missing and must be requested.
+            requestGalleryPermission()
+        }
+    }
+
+    private fun requestGalleryPermission() {
+        // Permission has not been granted and must be requested.
+        if (shouldShowRequestPermissionRationaleCompat(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            // Provide an additional rationale to the user if the permission was not granted
+            // and the user would benefit from additional context for the use of the permission.
+            // Display a SnackBar with a button to request the missing permission.
+            //  binding.homeLayout.showSnackbar(R.string.app_name,
+            //    Snackbar.LENGTH_INDEFINITE, R.string.ok)
+            //{
+            requestPermissionsCompat(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                OPERATION_CHOOSE_PHOTO
+            )
+            // }
+
+        } else {
+            // binding.homeLayout.showSnackbar("R.string.camera_permission_not_available", Snackbar.LENGTH_SHORT)
+            show("Storage permission not available")
+
+            // Request the permission. The result will be received in onRequestPermissionResult().
+            requestPermissionsCompat(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), OPERATION_CHOOSE_PHOTO)
+        }
+    }
 
     fun decodeSampledBitmapFromResource(
         res: Resources,
@@ -710,6 +755,25 @@ class Pictures: Fragment() {
 
             BitmapFactory.decodeResource(res, resId, this)
         }
+    }
+    private fun setUpToolbar() {
+        val mainActivity = mActivity as MainActivity
+        val  navigationView : NavigationView? = mActivity.findViewById(R.id.nav_view)
+        mainActivity.setSupportActionBar(binding.toolbar)
+        val navController = NavHostFragment.findNavController(this)
+        val appBarConfiguration =  mainActivity.appBarConfiguration
+        NavigationUI.setupActionBarWithNavController(mainActivity, navController, appBarConfiguration!!)
+        NavigationUI.setupWithNavController(navigationView!!,navController)
+
+        setHasOptionsMenu(true)
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpToolbar()
+    }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        activity?.let { mActivity = it}
     }
 
 }

@@ -7,9 +7,25 @@
 
 
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/const_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LoginActivity2">
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:fitsSystemWindows="true"
+        app:title="Login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_scrollFlags="scroll|enterAlways"
+        tools:layout_editor_absoluteY="-16dp" />
 
     <!-- SIGN IN LAYOUT -->
 
@@ -18,14 +34,15 @@
         style="@style/MaterialButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:divider="@color/design_default_color_background"
         app:checkedButton="@+id/signin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.231"
+        app:layout_constraintTop_toBottomOf="@id/logo"
+        app:layout_constraintVertical_bias="0.0"
         app:selectionRequired="true"
         app:singleSelection="true">
 
@@ -82,6 +99,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/Pass"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            app:passwordToggleTint="@color/colorPrimary"
+            app:passwordToggleEnabled="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp">
@@ -94,35 +113,33 @@
                 android:hint="@string/prompt_password" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
+        <com.google.android.material.chip.Chip
             android:id="@+id/login"
-            style="@style/MaterialButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="32dp"
-            android:background="@color/colorPrimary"
-            android:text="@string/action_sign_in_short"
-            android:textColor="@color/colorOnPrimary"
-            app:cornerRadius="24dp" />
+            android:textSize="18sp"
+            android:text="Login"
+            android:backgroundTint="@color/colorSecondary"
+            android:textColor="@color/colorOnSecondary"              />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/forgot_pass"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/forgot_password"
             android:textStyle="italic"
             android:textSize="14sp"
             style="?android:attr/borderlessButtonStyle"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
             android:visibility="gone"
-            android:textColorLink="@color/colorPrimaryDark"
+            android:textColorLink="@color/colorPrimaryVariant"
             android:textColor="@color/colorPrimary"
             />
 
     </LinearLayout>
-
     <!-- FOR REGISTER -->
 
     <LinearLayout
@@ -140,7 +157,7 @@
         tools:ignore="MissingConstraints">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/FirstName"
+            android:id="@+id/userName"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -173,6 +190,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            app:passwordToggleTint="@color/colorPrimary"
+            app:passwordToggleEnabled="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp">
@@ -181,13 +200,15 @@
                 android:id="@+id/passreg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/confirm_password"
+                android:hint="@string/prompt_password"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/ConfirmPass"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+            app:passwordToggleTint="@color/colorPrimary"
+            app:passwordToggleEnabled="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp">
@@ -200,26 +221,62 @@
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.checkbox.MaterialCheckBox
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/termsLayout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Click to agree with terms and agreement"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"/>
+            android:layout_height="wrap_content">
 
-        <com.google.android.material.button.MaterialButton
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/termsCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/check_agree"
+                android:onClick="onCheckBoxClicked"
+                android:textColor="@color/colorPrimary"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/term_condition"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/terms_and_condition"
+                android:textStyle="normal"
+                android:textAlignment="textStart"
+                android:textAllCaps="false"
+                app:layout_constraintBottom_toBottomOf="@+id/termsCheck"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/termsCheck"
+                app:layout_constraintTop_toTopOf="@+id/termsCheck" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.chip.Chip
             android:id="@+id/btnRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:background="#FFFFFF"
+            android:enabled="false"
+            android:backgroundTint="@color/colorSecondary"
+            android:textColor="@color/colorOnSecondary"
+            android:textSize="18sp"
             android:gravity="center"
             android:text="@string/register"
-            android:textColor="@color/colorOnPrimary" />
-
+           />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:srcCompat="@drawable/app_logo_foreground" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

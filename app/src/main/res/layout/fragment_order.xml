@@ -3,12 +3,36 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/app_background"
-    tools:context=".ui.order.OrderFragment"
+    android:name="Order"
     >
-<androidx.constraintlayout.widget.ConstraintLayout
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:background="@color/app_background"
+        android:id="@+id/coordinator"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:ignore="MergeRootFrame"
+        >
+    <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_scrollFlags="scroll|enterAlways"
+            tools:layout_editor_absoluteY="-16dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerOrder"
@@ -17,9 +41,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         tools:listitem="@layout/order_list" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

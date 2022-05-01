@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/catGrid"
-        android:title="@string/order_list"
-        app:showAsAction="ifRoom"
+        android:id="@+id/menu_switch_layout"
+        android:title="@string/category"
+        app:showAsAction="always"
         android:icon="@drawable/ic_baseline_list_24"
          />
 

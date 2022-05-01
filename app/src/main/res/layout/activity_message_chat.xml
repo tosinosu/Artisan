@@ -22,8 +22,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:id="@+id/toolbar_message_chat"
-            android:background="@color/colorPrimaryDark"
             app:popupTheme="@style/AppTheme.PopupOverlay"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:gravity="center_vertical">
 
             <LinearLayout
@@ -113,7 +113,7 @@
             android:layout_height="40dp"
             android:id="@+id/send_message_btn"
             android:background="@drawable/button_background"
-            android:src="@drawable/ic_menu_send"
+            android:src="@drawable/ic_baseline_send_24"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true" />
 

@@ -1,10 +1,13 @@
 package com.tostech.artisan
 
+import android.content.Context
 import android.net.Uri
-import android.util.Log
+//import android.util.Log
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
+import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -13,8 +16,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageReference
-import com.tostech.artisan.data.AdvertData
 import com.tostech.artisan.data.UserData
 
 class Database {
@@ -27,7 +28,7 @@ class Database {
         }
 
         override fun onCancelled(error: DatabaseError) {
-            Log.w("Database", "loadPost:onCancelled", error.toException())
+            //Log.w("Database", "loadPost:onCancelled", error.toException())
         }
     }
 
@@ -60,7 +61,7 @@ class Database {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.w("Database", "loadPost:onCancelled", error.toException())
+                //Log.w("Database", "loadPost:onCancelled", error.toException())
             }
         }
 
@@ -92,17 +93,29 @@ class Database {
             database.child("User").child(id).child("advert/$advert").setValue(value)
 
     }
+    internal fun writeSingleValue(ref: DatabaseReference?, value:String?) {
+        database = Firebase.database.reference
+
+        ref!!.setValue(value)
+
+    }
 
 
   internal fun writeContacts(id: String?, address: String?, country: String?, state: String?, lga: String?, phoneNum: String?, facebook: String?, twitter: String?, whatsapp: String?, instagram: String?, other: String?) {
         database = Firebase.database.reference
-
+        val fragment = Fragment()
       if (id != null) {
           database.child(id)
 
         database.child("User").child(id).child("contact/phone").setValue(phoneNum)
         database.child("User").child(id).child("contact/office_address").setValue(address)
-        database.child("User").child(id).child("contact/country").setValue(country)
+        database.child("User").child(id).child("contact/country").setValue(country).addOnSuccessListener {
+            val sharedPref = fragment.context?.getSharedPreferences("ArtisanLocation", Context.MODE_PRIVATE) ?: return@addOnSuccessListener
+            with(sharedPref.edit()){
+                putString("countryPref", country!!)
+                apply()
+            }
+        }
         database.child("User").child(id).child("contact/state").setValue(state)
         database.child("User").child(id).child("contact/lga").setValue(lga)
         database.child("User").child(id).child("contact/whatsapp").setValue(whatsapp)
@@ -148,4 +161,51 @@ class Database {
         }
         return uid
     }
+    fun getAdvert(reference: DatabaseReference, view: TextView, context: Context) {
+        val dataListener = object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val value = snapshot.getValue(String::class.java)
+                view.text = value
+            }
+            override fun onCancelled(error: DatabaseError) {
+              //  Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
+                //Log.w("Database", "loadPost:onCancelled", error.toException())
+            }
+        }
+
+        reference.addValueEventListener(dataListener)
+
+
+    }
+    fun getAdvertPix(reference: DatabaseReference, view: ImageView, context: Context) {
+        val dataListener = object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val value = snapshot.getValue(String::class.java)
+                Glide.with(context).load(value).into(view)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                //Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
+                //Log.w("Database", "loadPost:onCancelled", error.toException())
+            }
+        }
+
+        reference.addValueEventListener(dataListener)
+
+
+    }
+    /*  fun getAdvertSpinner(reference: DatabaseReference, view: Spinner, context: Context) {
+          val dataListener = object: ValueEventListener {
+              override fun onDataChange(snapshot: DataSnapshot) {
+                  val value = snapshot.getValue(String::class.java)
+                  view.setSelection(position) = value
+              }
+              override fun onCancelled(error: DatabaseError) {
+                  Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
+                  Log.w("Database", "loadPost:onCancelled", error.toException())
+              }
+          }
+
+          reference.addValueEventListener(dataListener)
+
+      }*/
 }

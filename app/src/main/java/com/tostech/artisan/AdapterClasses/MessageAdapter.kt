@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -71,11 +73,10 @@ class MessageAdapter ( mContext: Context,
 
 
 
-                holder.itemView.setOnClickListener {
+                holder.itemView.setOnClickListener { v->
                     val options = arrayOf<CharSequence>(
                         "Message",
                         "Visit Profile"
-
                     )
                     val builder: AlertDialog.Builder = AlertDialog.Builder(mContext)
                     builder.setTitle("What do you want?")
@@ -87,9 +88,11 @@ class MessageAdapter ( mContext: Context,
                             mContext.startActivity(intent)
                         }
                         if (position == 1) {
-                            // val intent = Intent(mContext, HomeFragment::class.java)
-                            //intent.putExtra("visit_id", user.uid)
-                            //mContext.startActivity(intent)
+
+                            val bundle = bundleOf("signInID" to user.uid)
+
+                            v.findNavController().navigate(R.id.action_nav_messages_to_homeFragment, bundle)
+
                         }
 
                     })
@@ -168,7 +171,7 @@ class MessageAdapter ( mContext: Context,
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                   // TODO("Not yet implemented")
                 }
 
             })

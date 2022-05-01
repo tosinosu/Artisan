@@ -3,69 +3,235 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@id/nav_home">
 
     <fragment
         android:id="@+id/nav_home"
         android:name="com.tostech.artisan.ui.artisanlist.BusinessListFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_artisan_list" />
+        tools:layout="@layout/fragment_artisan_list" >
+        <action
+            android:id="@+id/action_nav_home_to_nav_messages"
+            app:destination="@id/nav_messages" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_exit"
+            app:destination="@id/nav_exit" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_order"
+            app:destination="@id/nav_order" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_about"
+            app:destination="@id/nav_about" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_advert_image"
+            app:destination="@id/nav_advert_image" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_about2"
+            app:destination="@id/nav_about" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_subscribe"
+            app:destination="@id/nav_subscribe" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_settings"
+            app:destination="@id/nav_settings" />
+        <argument
+            android:name="signInID"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_category"
+            app:destination="@id/nav_category" />
+        <action
+            android:id="@+id/action_nav_home_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_profile"
+            app:destination="@id/nav_profile" />
+        <argument
+            android:name="fragment"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_nav_home_to_searchActivity"
+            app:destination="@id/searchActivity" />
+
+
+    </fragment>
 
     <fragment
         android:id="@+id/nav_category"
         android:name="com.tostech.artisan.ui.category.CategoryFragment"
         android:label="@string/category"
-        tools:layout="@layout/fragment_category" />
+        tools:layout="@layout/fragment_category" >
+        <action
+            android:id="@+id/action_nav_category_to_busCatFragment"
+            app:destination="@id/busCatFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_busCatFragment"
+            app:destination="@id/busCatFragment" />
+        <argument
+            android:name="artisan_position"
+            app:argType="string"
+            android:defaultValue="other"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_nav_category_to_searchActivity"
+            app:destination="@id/searchActivity" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_order"
         android:name="com.tostech.artisan.ui.order.OrderFragment"
         android:label="@string/order_list"
-        tools:layout="@layout/fragment_order" />
+        tools:layout="@layout/fragment_order" >
+        <action
+            android:id="@+id/action_nav_order_to_searchActivity"
+            app:destination="@id/searchActivity" />
+    </fragment>
 
-    <fragment
-        android:id="@+id/nav_profile"
-        android:name="com.tostech.artisan.ui.profile.ProfileFragment"
-        android:label="@string/profile"
-        tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/nav_settings"
         android:name="com.tostech.artisan.ui.settings.SettingsFragment"
         android:label="@string/action_settings"
-        tools:layout="@layout/fragment_settings" />
-
-    <fragment
-        android:id="@+id/nav_profile2"
-        android:name="com.tostech.artisan.Profile"
-        android:label="@string/profile"
-        tools:layout="@layout/profile" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_nav_settings_to_searchActivity"
+            app:destination="@id/searchActivity" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_advert_image"
         android:name="com.tostech.artisan.Pictures"
         android:label="@string/advert_image"
-        tools:layout="@layout/logo" />
+        tools:layout="@layout/logo" >
+        <action
+            android:id="@+id/action_nav_advert_image_to_searchActivity"
+            app:destination="@id/searchActivity" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_subscribe"
         android:name="com.tostech.artisan.Subscription"
         android:label="@string/subscription"
-        tools:layout="@layout/subscription" />
+        tools:layout="@layout/subscription" >
+        <action
+            android:id="@+id/action_nav_subscribe_to_searchActivity"
+            app:destination="@id/searchActivity" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_about"
         android:name="com.tostech.artisan.ui.about.AboutFragment"
         android:label="@string/about"
-        tools:layout="@layout/fragment_about" />
+        tools:layout="@layout/fragment_about" >
+        <action
+            android:id="@+id/action_nav_about_to_searchActivity"
+            app:destination="@id/searchActivity" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_messages"
         android:name="com.tostech.artisan.ui.messages.MessagesFragment"
         android:label="@string/menu_inbox"
-        tools:layout="@layout/fragment_messages" />
+        tools:layout="@layout/fragment_messages" >
+        <action
+            android:id="@+id/action_nav_messages_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_nav_messages_to_searchActivity"
+            app:destination="@id/searchActivity" />
+    </fragment>
     <fragment
         android:id="@+id/nav_exit"
         android:name="com.tostech.artisan.MainActivity"
         android:label="@string/exit"
-        tools:layout="@layout/fragment_exit" />
+        tools:layout="@layout/fragment_exit" >
+        <action
+            android:id="@+id/action_nav_exit_to_searchActivity"
+            app:destination="@id/searchActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/imagePagerFragment"
+        android:name="com.tostech.artisan.ui.ImagePagerFragment"
+        android:label="Advert Images" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.tostech.artisan.ui.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_imagePagerFragment"
+            app:destination="@id/imagePagerFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_busCatFragment2"
+            app:destination="@id/busCatFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_nav_home"
+            app:destination="@id/nav_home" />
+        <argument
+            android:name="imageUrl"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="imageText"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="userId"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="position"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="fragmentHome"
+            app:argType="boolean"
+            android:defaultValue="true" />
+        <action
+            android:id="@+id/action_homeFragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
+        <argument
+            android:name="visit_id"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment android:id="@+id/busCatFragment"
+        android:name="com.tostech.artisan.ui.artisanlist.BusinessListCategoryFragment"
+        android:label="Artisan"
+        tools:layout="@layout/fragment_artisan_list_category">
+        <action
+            android:id="@+id/action_busCatFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <argument
+            android:name="signInID"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="category"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_busCatFragment_to_searchActivity"
+            app:destination="@id/searchActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.tostech.artisan.ui.profile.ProfileFragment"
+        android:label="@string/profile"
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_nav_profile_to_searchActivity"
+            app:destination="@id/searchActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/commentFragment"
+        android:name="com.tostech.artisan.CommentFragment"
+        android:label="View Comments" />
+    <activity
+        android:id="@+id/searchActivity"
+        android:name="com.tostech.artisan.SearchActivity"
+        android:label="activity_search"
+        tools:layout="@layout/activity_search" />
+
 </navigation>

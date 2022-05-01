@@ -1,17 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorWhite"
-    tools:context="com.tostech.artisan.ui.messages.MessagesFragment">
+    android:name="@string/Inbox"
+    android:background="@color/app_background"
+    >
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-<androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/recycler_messages"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:listitem="@layout/user_search"
- />
 
-</RelativeLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_category"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/colorPrimary"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    android:fitsSystemWindows="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_scrollFlags="scroll|enterAlways"
+                    tools:layout_editor_absoluteY="-16dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_messages"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/toolbar"
+                    app:layout_constraintVertical_bias="1.0"
+                    tools:listitem="@layout/user_search" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

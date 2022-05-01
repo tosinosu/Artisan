@@ -3,13 +3,24 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:name=".Subscription"
+
     >
-    <ScrollView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:background="@color/app_background"
+        android:id="@+id/coordinator"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:ignore="MergeRootFrame"
+        >
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
 
         >
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint"
             android:layout_width="match_parent"
@@ -18,186 +29,331 @@
             android:descendantFocusability="beforeDescendants"
             android:focusableInTouchMode="true">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/FName"
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                android:fitsSystemWindows="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_scrollFlags="scroll|enterAlways"
+                tools:layout_editor_absoluteY="-16dp" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/fNameEt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/fname" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/LName"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/subCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="@+id/FName"
-                app:layout_constraintStart_toStartOf="@+id/FName"
-                app:layout_constraintTop_toBottomOf="@+id/FName">
+                android:layout_margin="10dp"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="10dp"
+                app:cardBackgroundColor="@color/colorWhite"
+                app:cardPreventCornerOverlap="true"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/lnameEt"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/lname" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="match_parent">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/phone"
+                    <TextView
+                        android:id="@+id/subView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Status:"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.4"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/subscription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:text="Inactive"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/subView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.04"
+                        app:layout_constraintStart_toEndOf="@+id/subView"
+                        app:layout_constraintTop_toTopOf="@+id/subView"
+                        app:layout_constraintVertical_bias="1.0" />
+
+                    <TextView
+                        android:id="@+id/begDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Date:"
+                        android:layout_marginStart="4dp"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/subView" />
+
+                    <TextView
+                        android:id="@+id/date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/begDate"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.02"
+                        app:layout_constraintStart_toEndOf="@+id/begDate"
+                        app:layout_constraintTop_toTopOf="@+id/begDate" />
+
+                    <TextView
+                        android:id="@+id/expView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Plan:"
+                        android:layout_marginStart="4dp"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/begDate" />
+
+                    <TextView
+                        android:id="@+id/expiration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:text="Three months"
+
+                        app:layout_constraintBottom_toBottomOf="@+id/expView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.02"
+                        app:layout_constraintStart_toEndOf="@+id/expView"
+                        app:layout_constraintTop_toTopOf="@+id/expView" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/payCardView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="@+id/LName"
-                app:layout_constraintStart_toStartOf="@+id/LName"
-                app:layout_constraintTop_toBottomOf="@+id/LName">
+                android:layout_height="match_parent"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="10dp"
+                app:cardBackgroundColor="@color/colorWhite"
+                app:cardPreventCornerOverlap="true"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/subCardView">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/phoneNumberEt"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/FName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/fNameEt"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"
+                            android:hint="@string/fname" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/LName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/phone_no"
-                    android:inputType="phone" />
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:layout_constraintEnd_toEndOf="@+id/FName"
+                    app:layout_constraintStart_toStartOf="@+id/FName"
+                    app:layout_constraintTop_toBottomOf="@+id/FName">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/lnameEt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:hint="@string/lname" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/EMail"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="@+id/phone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/phone">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/emailEt"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/email"
-                    android:inputType="textEmailAddress" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tiNarration"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="@+id/EMail"
-                app:layout_constraintStart_toStartOf="@+id/EMail"
-                app:layout_constraintTop_toBottomOf="@+id/EMail">
+                    app:layout_constraintEnd_toEndOf="@+id/LName"
+                    app:layout_constraintStart_toStartOf="@+id/LName"
+                    app:layout_constraintTop_toBottomOf="@+id/LName">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/narrationTV"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/phoneNumberEt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/phone_no"
+                        android:inputType="phone" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/EMail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+                    app:layout_constraintEnd_toEndOf="@+id/phone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/phone">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/emailEt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/email"
+                        android:inputType="textEmailAddress" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tiNarration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/narration" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:layout_constraintEnd_toEndOf="@+id/EMail"
+                    app:layout_constraintStart_toStartOf="@+id/EMail"
+                    app:layout_constraintTop_toBottomOf="@+id/EMail">
 
-            <TextView
-                android:id="@+id/textView13"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/select_country"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/textView14"
-                app:layout_constraintTop_toBottomOf="@+id/tiNarration" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/narrationTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:hint="@string/narration" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <Spinner
-                android:id="@+id/countryEt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/textView13"
-                app:layout_constraintStart_toEndOf="@+id/textView14"
-                app:layout_constraintStart_toStartOf="@+id/currencyEt"
-                app:layout_constraintTop_toTopOf="@+id/textView13" />
+                <TextView
+                    android:id="@+id/textView13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/select_country"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/textView14"
+                    app:layout_constraintTop_toBottomOf="@+id/tiNarration" />
 
-            <TextView
-                android:id="@+id/textView14"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/select_currency"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/textView17"
-                app:layout_constraintTop_toBottomOf="@+id/textView13" />
+                <Spinner
+                    android:id="@+id/countryEt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView13"
+                    app:layout_constraintStart_toEndOf="@+id/textView14"
+                    app:layout_constraintStart_toStartOf="@+id/currencyEt"
+                    app:layout_constraintTop_toTopOf="@+id/textView13" />
 
-            <TextView
-                android:id="@+id/currencyEt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/textView14"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView14"
-                app:layout_constraintTop_toTopOf="@+id/textView14" />
+                <TextView
+                    android:id="@+id/textView14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/select_currency"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/textView17"
+                    app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
-            <Button
-                android:id="@+id/startPaymentBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:text="@string/pay"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/subMonths" />
+                <TextView
+                    android:id="@+id/currencyEt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView14"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView14"
+                    app:layout_constraintTop_toTopOf="@+id/textView14" />
 
-            <TextView
-                android:id="@+id/textView17"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/amount"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView14" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/startPayBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        app:cornerRadius="3dp"
+                        android:text="@string/pay"
+                        android:backgroundTint="@color/colorSecondary"
+                        android:textColor="@color/colorOnSecondary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/subMonths" />
 
-            <TextView
-                android:id="@+id/amountEt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                <TextView
+                    android:id="@+id/textView17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/amount"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/textView17"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/countryEt"
-                app:layout_constraintTop_toTopOf="@+id/textView17" />
+                <TextView
+                    android:id="@+id/amountEt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
 
- <TextView
-                android:id="@+id/textView18"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/plan"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView17" />
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView17"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/countryEt"
+                    app:layout_constraintTop_toTopOf="@+id/textView17" />
 
-            <TextView
-                android:id="@+id/subMonths"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textStyle="italic"
-                app:layout_constraintBottom_toBottomOf="@+id/textView18"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView18"
-                app:layout_constraintStart_toStartOf="@+id/amountEt"
-                app:layout_constraintTop_toTopOf="@+id/textView18" />
+                <TextView
+                    android:id="@+id/textView18"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/plan"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView17" />
 
+                <TextView
+                    android:id="@+id/subMonths"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView18"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView18"
+                    app:layout_constraintStart_toStartOf="@+id/amountEt"
+                    app:layout_constraintTop_toTopOf="@+id/textView18" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+    </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

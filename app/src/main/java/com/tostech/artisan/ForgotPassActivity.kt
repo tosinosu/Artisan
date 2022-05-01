@@ -1,11 +1,10 @@
 package com.tostech.artisan
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.tostech.artisan.databinding.ActivityForgotPassBinding
-import com.tostech.artisan.databinding.ActivityLogin2Binding
 
 class ForgotPassActivity : AppCompatActivity() {
 
@@ -17,6 +16,7 @@ class ForgotPassActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
+        binding.toolbar.title = "Reset Password"
         binding.btnReset.setOnClickListener {
             val email: String = binding.emailReset.text.toString().trim { it <= ' ' }
 

@@ -1,32 +1,30 @@
 package com.tostech.artisan
 
-import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.widget.SearchView
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.navigation.NavigationView
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.core.os.bundleOf
-import androidx.fragment.app.FragmentTransaction
-import com.flutterwave.raveandroid.RavePayActivity
-import com.flutterwave.raveandroid.rave_java_commons.RaveConstants
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.ads.MobileAds
-import com.google.android.material.internal.NavigationMenuItemView
+import com.google.android.gms.ads.RequestConfiguration
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.safetynet.SafetyNetAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -38,35 +36,52 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.tostech.artisan.data.Chat
+//import com.tostech.artisan.nativeadd.TemplateView
 import com.tostech.artisan.notification.FirebaseService
-import com.tostech.artisan.ui.messages.MessagesFragment
 import de.hdodenhof.circleimageview.CircleImageView
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.system.exitProcess
 
- class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
      var databaseRef = Firebase.database.reference
      var firebaseUserID = Firebase.auth.currentUser?.uid
-    private lateinit var appBarConfiguration: AppBarConfiguration
+      lateinit var appBarConfiguration: AppBarConfiguration
+      lateinit var navController: NavController
+     val dbSave = Database()
+        lateinit var drawerLayout: DrawerLayout
+    private var pressedTime: Long = 0L
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
 
-
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+         drawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
 
+        val nav_host = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+         navController = nav_host.navController
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.nav_home, R.id.nav_category, R.id.nav_messages, R.id.nav_profile, R.id.nav_settings, R.id.nav_exit), drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
 
+        appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
+
+/*        appBarConfiguration = AppBarConfiguration(setOf(
+                R.id.nav_home, R.id.nav_category, R.id.nav_messages, R.id.nav_order,
+                    R.id.nav_profile, R.id.nav_advert_image, R.id.nav_subscribe, R.id.nav_settings, R.id.nav_about, R.id.nav_exit), drawerLayout)
+        setupActionBarWithNavController(navController, appBarConfiguration!!)
+        navView.setupWithNavController(navController)
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment)*/
+
+        findViewById<NavigationView>(R.id.nav_view).setupWithNavController(navController)
+
+        //openFromIntent(user)
+
+        FirebaseApp.initializeApp(this)
+        val firebaseAppCheck = FirebaseAppCheck.getInstance()
+        firebaseAppCheck.installAppCheckProviderFactory(SafetyNetAppCheckProviderFactory.getInstance())
 
 
         val profpixNav = navView.getHeaderView(0).findViewById<CircleImageView>(R.id.profpix_nav)
@@ -80,7 +95,8 @@ import kotlin.system.exitProcess
 
         val refName = Firebase.database.reference.child("User/$uid/advert/bus_name")
         val pixURL = Firebase.database.reference.child("User/$uid/advert/purl")
-        MobileAds.initialize(this)
+       // MobileAds.initialize(this, getString(R.string.real_admob_add_id))
+
 
         FirebaseService.sharedPref = getSharedPreferences("sharedPref",Context.MODE_PRIVATE)
         FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
@@ -91,14 +107,13 @@ import kotlin.system.exitProcess
 
 
 
-
         if (refEmail.isNullOrEmpty())
             email_nav.text = "Please register or sign in to your account"
         else
             email_nav.text = refEmail
 
-        GetData().getAdvert(refName, bus_name_nav, applicationContext)
-        GetData().getAdvertPix(pixURL, profpixNav, applicationContext)
+        dbSave.getAdvert(refName, bus_name_nav, applicationContext)
+        dbSave.getAdvertPix(pixURL, profpixNav, applicationContext)
 
         val ref = FirebaseDatabase.getInstance().reference.child("Chats")
         ref.addValueEventListener(object : ValueEventListener {
@@ -123,10 +138,11 @@ import kotlin.system.exitProcess
             }
 
             override fun onCancelled(p0: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
 
         })
+
 
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -147,37 +163,69 @@ import kotlin.system.exitProcess
 
     }
     fun toast(message: String) {
-        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
+        return when (item.itemId){
             R.id.action_sign_out -> {
-                FirebaseAuth.getInstance().signOut()
+                val builder = AlertDialog.Builder(this)
 
-                val intent = Intent(this@MainActivity, LoginActivity2::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-                finish()
-                return  true
+                builder.setMessage("You want to log out?")
+                    .setPositiveButton(
+                        R.string.yes,
+                        DialogInterface.OnClickListener { dialogInterface, i ->
+
+                            FirebaseAuth.getInstance().signOut()
+
+                            val intent = Intent(this@MainActivity, LoginActivity2::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                            finish()
+
+                        })
+                    .setNegativeButton(
+                        R.string.no,
+                        DialogInterface.OnClickListener { dialogInterface, i ->
+
+                        })
+                builder.create()
+                builder.show()
+                true
+
             }
+          else ->
+                false
 
         }
-        return false
     }
 
 
-
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+     //   val navController = findNavController(R.id.nav_host_fragment)
+        //return navController.navigateUp(appBarConfiguration!!) || super.onSupportNavigateUp()
+
+        return NavigationUI.navigateUp(navController, appBarConfiguration)// || super.onSupportNavigateUp()
+
     }
 
     override fun onBackPressed() {
 
-        super.onBackPressed()
-    }
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        }else{
+            if(pressedTime + 2000 > System.currentTimeMillis()){
+                super.onBackPressed()
+                finish()
+            }else{
+                 Toast.makeText(this@MainActivity, "Press back again to exit", Toast.LENGTH_SHORT).show()
+            }
+            pressedTime = System.currentTimeMillis()
+        }
 
+        // moveTaskToBack(true)
+
+    }
      override fun onPause() {
          super.onPause()
          updateStatus("offline")
@@ -211,96 +259,13 @@ import kotlin.system.exitProcess
      private fun updateStatus(status: String){
          //val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
-             val ref = FirebaseDatabase.getInstance().reference.child("User").child(firebaseUserID!!).child("advert")
+             val ref = databaseRef.child("User").child(firebaseUserID!!).child("advert")
              val hashMap = HashMap<String, Any>()
              hashMap["status"] = status
              ref!!.updateChildren(hashMap)
 
      }
-     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-         super.onActivityResult(requestCode, resultCode, data)
 
-         Toast.makeText(this, "OnActivity is called", Toast.LENGTH_SHORT).show()
-         if (requestCode == RaveConstants.RAVE_REQUEST_CODE && data != null) {
-             val message = data.getStringExtra("response")
-             if (message != null) {
-                 val ref = databaseRef.child("User/$firebaseUserID/subscribe")
-                 ref.addListenerForSingleValueEvent(object : ValueEventListener {
-                     override fun onDataChange(snapshot: DataSnapshot) {
-                         ref.child(message)
-                     }
-
-                     override fun onCancelled(error: DatabaseError) {
-
-                     }
-                 })
-
-                 // Log.d("rave response", message)
-             }
-             when (resultCode) {
-                 RavePayActivity.RESULT_SUCCESS -> {
-                     Toast.makeText(this, "SUCCESS $message", Toast.LENGTH_SHORT).show()
-                 }
-                 RavePayActivity.RESULT_ERROR -> {
-                     Toast.makeText(this, "ERROR $message", Toast.LENGTH_SHORT).show()
-                 }
-                 RavePayActivity.RESULT_CANCELLED -> {
-                     Toast.makeText(this, "CANCELLED $message", Toast.LENGTH_SHORT)
-                         .show()
-                 }
-             }
-         }else{
-             super.onActivityResult(requestCode, resultCode, data)
-         }
-
-         return super.onActivityResult(requestCode, resultCode, data)
-
-         /* if (resultCode === RaveConstants.RESULT_SUCCESS) {
-              when (requestCode) {
-                  RaveConstants.PIN_REQUEST_CODE -> {
-                      val pin = data!!.getStringExtra(PinFragment.EXTRA_PIN)
-                      // Use the collected PIN
-                      cardPayManager.submitPin(pin)
-                  }
-                  RaveConstants.ADDRESS_DETAILS_REQUEST_CODE -> {
-                      val streetAddress = data!!.getStringExtra(AVSVBVFragment.EXTRA_ADDRESS)
-                      val state = data.getStringExtra(AVSVBVFragment.EXTRA_STATE)
-                      val city = data.getStringExtra(AVSVBVFragment.EXTRA_CITY)
-                      val zipCode = data.getStringExtra(AVSVBVFragment.EXTRA_ZIPCODE)
-                      val country = data.getStringExtra(AVSVBVFragment.EXTRA_COUNTRY)
-                      val address = AddressDetails(streetAddress, city, state, zipCode, country)
-
-                      // Use the address details
-                      cardPayManager.submitAddress(address)
-                  }
-                  RaveConstants.WEB_VERIFICATION_REQUEST_CODE ->                     // Web authentication complete, proceed
-                      cardPayManager.onWebpageAuthenticationComplete()
-                  RaveConstants.OTP_REQUEST_CODE -> {
-                      val otp = data!!.getStringExtra(OTPFragment.EXTRA_OTP)
-                      // Use OTP
-                      cardPayManager.submitOtp(otp)
-                  }
-              }
-          }
-
-          if (requestCode === RaveConstants.RAVE_REQUEST_CODE && data != null) {
-              val message = data.getStringExtra("response")
-              if (message != null) {
-                  Log.d("rave response", message)
-              }
-              if (resultCode === RavePayActivity.RESULT_SUCCESS) {
-                  Toast.makeText(this, "SUCCESS $message", Toast.LENGTH_SHORT).show()
-              } else if (resultCode === RavePayActivity.RESULT_ERROR) {
-                  Toast.makeText(this, "ERROR $message", Toast.LENGTH_SHORT).show()
-              } else if (resultCode === RavePayActivity.RESULT_CANCELLED) {
-                  Toast.makeText(this, "CANCELLED $message", Toast.LENGTH_SHORT).show()
-              }
-          } else if (requestCode === RaveConstants.WEB_VERIFICATION_REQUEST_CODE) {
-              cardPayManager.onWebpageAuthenticationComplete()
-          } else {
-              super.onActivityResult(requestCode, resultCode, data)
-          }*/
-     }
 
  }
 

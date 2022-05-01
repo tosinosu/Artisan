@@ -1,25 +1,17 @@
 package com.tostech.artisan
 
-import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+//import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.graphics.toColor
-import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
-import com.google.android.material.internal.NavigationMenuItemView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -129,7 +121,7 @@ class MessageChatActivity : AppCompatActivity() {
             .child("User").child(userVisit!!).child("advert")
 
 
-        Log.v("Uservisit", userVisit)
+//        Log.v("Uservisit", userVisit)
         firebaseUser = FirebaseAuth.getInstance().currentUser
 
         binding.recyclerviewChat.setHasFixedSize(true)
@@ -149,7 +141,7 @@ class MessageChatActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+               // TODO("Not yet implemented")
             }
         })
 
@@ -189,7 +181,7 @@ class MessageChatActivity : AppCompatActivity() {
         } catch (ex: NullPointerException){
             status("offline")
             currentUser("none")
-            Log.d("removelistener", ex.message.toString())
+            //Log.d("removelistener", ex.message.toString())
         }
     }
 
@@ -203,7 +195,7 @@ class MessageChatActivity : AppCompatActivity() {
         } catch (ex: NullPointerException){
             status("offline")
             currentUser("none")
-            Log.d("removelistener", ex.message.toString())
+            //Log.d("removelistener", ex.message.toString())
         }
     }
 
@@ -217,7 +209,7 @@ class MessageChatActivity : AppCompatActivity() {
         } catch (ex: NullPointerException){
             status("offline")
             currentUser("none")
-            Log.d("removelistener", ex.message.toString())
+            //Log.d("removelistener", ex.message.toString())
         }
 
     }
@@ -231,7 +223,7 @@ class MessageChatActivity : AppCompatActivity() {
     fun status(status: String){
         val reference = FirebaseDatabase.getInstance().reference.child("User").child(firebaseUser!!.uid).child("advert")
         val hashMap = HashMap<String, Any>()
-        hashMap.put("status", status)
+        hashMap["status"] = status
         reference.updateChildren(hashMap)
 
 
@@ -292,7 +284,7 @@ class MessageChatActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                //TODO("Not yet implemented")
             }
         })
     }
@@ -417,7 +409,7 @@ class MessageChatActivity : AppCompatActivity() {
                     reference1.addListenerForSingleValueEvent(object : ValueEventListener{
                         override fun onDataChange(snapshot: DataSnapshot) {
                             val username = snapshot.child("username").value.toString()
-                            Log.v("Username", username)
+                        //    Log.v("Username", username)
                             PushNotification(NotificationData(senderID,  "$username: $msg", "New Message",  receiverID),
                                 topic).also {
                                 sendNotification(it)
@@ -426,7 +418,7 @@ class MessageChatActivity : AppCompatActivity() {
                         }
 
                         override fun onCancelled(error: DatabaseError) {
-                            TODO("Not yet implemented")
+                          //  TODO("Not yet implemented")
                         }
                     })
 
@@ -441,12 +433,12 @@ class MessageChatActivity : AppCompatActivity() {
          //   Log.e("noti", response.toString())
 
             if(response.isSuccessful) {
-                Log.d("notisuccess", "Response: Success") //${Gson().toJson(response)}")
+                //Log.d("notisuccess", "Response: Success") //${Gson().toJson(response)}")
             } else {
-                Log.e("notiError1", response.errorBody()!!.string())
+                //Log.e("notiError1", response.errorBody()!!.string())
             }
         } catch(e: Exception) {
-            Log.e("noticatch", e.message.toString())
+            //Log.e("noticatch", e.message.toString())
         }
 
     }
@@ -457,26 +449,6 @@ class MessageChatActivity : AppCompatActivity() {
         val referenceChatList = Firebase.database.reference.child("ChatList").child(firebaseUserID)
         val referenceChatL = Firebase.database.reference.child("ChatList").child(userVisit)
 
-/*
-        referenceChat!!.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for(datasnapshot in snapshot.children){
-                    val chatData = datasnapshot.getValue(Chat::class.java)
-
-                    if((chatData!!.receiver == firebaseUserID && chatData!!.sender == userVisit) ||
-                        (chatData!!.receiver == userVisit && chatData!!.sender == firebaseUserID)){
-                        referenceChat.child(firebaseUserID).ref.removeValue()
-                    }
-                }
-
-
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-        })*/
-
         referenceChatList!!.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 for(datasnapshot in snapshot.children){
@@ -484,7 +456,6 @@ class MessageChatActivity : AppCompatActivity() {
 
                     if(chatListData!!.id == userVisit ){
                         referenceChatList.child(userVisit).removeValue()
-                       // referenceChatList.child(firebaseUserID).removeValue()
 
                     }
                 }

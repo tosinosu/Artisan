@@ -15,7 +15,7 @@ import com.tostech.artisan.data.DeleteData
 import com.tostech.artisan.data.Order
 import de.hdodenhof.circleimageview.CircleImageView
 
-class CommentAdapter (options: FirebaseRecyclerOptions<CommentData>) :  FirebaseRecyclerAdapter<CommentData, CommentAdapter.ViewHolder>(
+class CommentAdapter (options: FirebaseRecyclerOptions<String>) :  FirebaseRecyclerAdapter<String, CommentAdapter.ViewHolder>(
     options
 ) {
 
@@ -27,15 +27,14 @@ class CommentAdapter (options: FirebaseRecyclerOptions<CommentData>) :  Firebase
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int,
-        commentData: CommentData
+        commentData: String
     ) {
-        holder.comment!!.setText(commentData.text)
+        holder.comment!!.text = commentData
 
     }
 
     class ViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView) {
         val comment: TextView = itemView.findViewById(R.id.comment)
-
 
     }
 

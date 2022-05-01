@@ -1,17 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android" >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:name="Advert Images"
+    >
 
-    <ScrollView
-        android:id="@+id/content"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior ="@string/appbar_scrolling_view_behavior"
+        >
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     >
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:fitsSystemWindows="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_scrollFlags="scroll|enterAlways"
+        tools:layout_editor_absoluteY="-16dp" />
+
 
 
     <ImageView
@@ -21,21 +42,19 @@
         android:layout_marginStart="4dp"
         android:src="@drawable/ic_baseline_person_24"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/toolbar"/>
 
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/upload"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView1"
-        app:layout_constraintEnd_toEndOf="@+id/textView5"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textView5"
-        app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:layout_constraintVertical_bias="0.0" />
+        app:rippleColor="@color/colorAccent"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@color/colorOnSecondary"
+        app:layout_constraintBottom_toBottomOf="@+id/delete_logo"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -47,15 +66,17 @@
         app:layout_constraintStart_toStartOf="@id/imageView1"
         app:layout_constraintTop_toBottomOf="@+id/imageView1" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/upload"
-        app:layout_constraintEnd_toEndOf="@+id/textView7"
-        app:layout_constraintStart_toStartOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/textView7" />
+        app:rippleColor="@color/colorAccent"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@color/colorOnSecondary"
+        app:layout_constraintBottom_toBottomOf="@+id/delete1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/delete1" />
 
     <ImageView
         android:id="@+id/imageView3"
@@ -67,15 +88,16 @@
         app:layout_constraintStart_toStartOf="@id/imageView2"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        app:rippleColor="@color/colorAccent"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@color/colorOnSecondary"
         android:text="@string/upload"
-        app:layout_constraintEnd_toEndOf="@+id/textView8"
-        app:layout_constraintStart_toStartOf="@+id/textView8"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+        app:layout_constraintBottom_toBottomOf="@+id/delete2"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
         android:id="@+id/imageView4"
@@ -88,15 +110,16 @@
         app:layout_constraintStart_toStartOf="@+id/imageView3"
         app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        app:rippleColor="@color/colorAccent"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@color/colorOnSecondary"
         android:text="@string/upload"
-        app:layout_constraintEnd_toEndOf="@+id/textView9"
-        app:layout_constraintStart_toStartOf="@+id/textView9"
-        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+        app:layout_constraintBottom_toBottomOf="@+id/delete3"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
         android:id="@+id/imageView5"
@@ -108,15 +131,16 @@
         app:layout_constraintStart_toStartOf="@+id/imageView4"
         app:layout_constraintTop_toBottomOf="@+id/imageView4" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        app:rippleColor="@color/colorAccent"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@color/colorOnSecondary"
         android:text="@string/upload"
-        app:layout_constraintEnd_toEndOf="@+id/textView10"
-        app:layout_constraintStart_toStartOf="@+id/textView10"
-        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+        app:layout_constraintBottom_toBottomOf="@+id/delete4"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
         android:id="@+id/imageView6"
@@ -128,15 +152,16 @@
         app:layout_constraintStart_toStartOf="@+id/imageView5"
         app:layout_constraintTop_toBottomOf="@+id/imageView5" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        app:rippleColor="@color/colorAccent"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@color/colorOnSecondary"
         android:text="@string/upload"
-        app:layout_constraintEnd_toEndOf="@+id/textView11"
-        app:layout_constraintStart_toStartOf="@+id/textView11"
-        app:layout_constraintTop_toBottomOf="@+id/textView11" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/textView5"
@@ -145,7 +170,6 @@
         android:layout_marginTop="8dp"
         android:text="@string/business_logo"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/imageView1"
         app:layout_constraintTop_toTopOf="@+id/imageView1" />
 
@@ -153,21 +177,17 @@
         android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/business_advert_1"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView2"
-        app:layout_constraintVertical_bias="0.38" />
+        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintTop_toTopOf="@+id/imageView2" />
 
     <TextView
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/business_advert_2"
-        app:layout_constraintBottom_toTopOf="@+id/button3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/imageView3"
         app:layout_constraintTop_toTopOf="@+id/imageView3" />
 
@@ -176,32 +196,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/business_advert_3"
-        app:layout_constraintBottom_toTopOf="@+id/button4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/imageView4"
-        app:layout_constraintTop_toTopOf="@+id/imageView4"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="@+id/imageView4" />
 
     <TextView
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/business_advert_4"
-        app:layout_constraintBottom_toTopOf="@+id/button5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/imageView5"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4" />
+        app:layout_constraintTop_toTopOf="@+id/imageView5" />
 
     <TextView
         android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/business_advert_5"
-        app:layout_constraintBottom_toTopOf="@+id/button6"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/imageView6"
         app:layout_constraintTop_toTopOf="@+id/imageView6" />
 
@@ -209,161 +222,165 @@
         android:id="@+id/delete_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/delete"
-        app:layout_constraintEnd_toEndOf="@+id/button1"
-        app:layout_constraintStart_toStartOf="@+id/button1"
-        app:layout_constraintTop_toBottomOf="@+id/button1" />
+        android:textColor="?attr/colorError"
+        style="?attr/materialButtonOutlinedStyle"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView1"
+        app:layout_constraintEnd_toStartOf="@+id/button1"
+        app:layout_constraintStart_toEndOf="@+id/imageView1" />
 
     <Button
         android:id="@+id/delete1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/delete"
+        android:textColor="?attr/colorError"
+        style="?attr/materialButtonOutlinedStyle"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintEnd_toEndOf="@+id/button2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/button2"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
+        app:layout_constraintEnd_toStartOf="@+id/button2"
+        app:layout_constraintStart_toEndOf="@+id/imageView2" />
 
     <Button
         android:id="@+id/delete2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:textColor="?attr/colorError"
+        style="?attr/materialButtonOutlinedStyle"
         android:text="@string/delete"
-        app:layout_constraintEnd_toEndOf="@+id/button3"
-        app:layout_constraintStart_toStartOf="@+id/button3"
-        app:layout_constraintTop_toBottomOf="@+id/button3" />
+        app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+        app:layout_constraintEnd_toStartOf="@+id/button3"
+        app:layout_constraintStart_toEndOf="@+id/imageView3" />
 
     <Button
         android:id="@+id/delete3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/delete"
+        android:textColor="?attr/colorError"
+        style="?attr/materialButtonOutlinedStyle"
         app:layout_constraintBottom_toBottomOf="@+id/imageView4"
-        app:layout_constraintEnd_toEndOf="@+id/button4"
-        app:layout_constraintStart_toStartOf="@+id/button4"
-        app:layout_constraintTop_toBottomOf="@+id/button4"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintEnd_toStartOf="@+id/button4"
+        app:layout_constraintStart_toEndOf="@+id/imageView4" />
 
     <Button
         android:id="@+id/delete4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:textColor="?attr/colorError"
+        style="?attr/materialButtonOutlinedStyle"
         android:text="@string/delete"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
-        app:layout_constraintEnd_toEndOf="@+id/button5"
-        app:layout_constraintStart_toStartOf="@+id/button5"
-        app:layout_constraintTop_toBottomOf="@+id/button5" />
+        app:layout_constraintEnd_toStartOf="@+id/button5"
+        app:layout_constraintStart_toEndOf="@+id/imageView5" />
 
     <Button
         android:id="@+id/delete5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/delete"
+        android:textColor="?attr/colorError"
+        style="?attr/materialButtonOutlinedStyle"
         app:layout_constraintBottom_toBottomOf="@+id/imageView6"
-        app:layout_constraintEnd_toEndOf="@+id/button6"
-        app:layout_constraintStart_toStartOf="@+id/button6"
-        app:layout_constraintTop_toBottomOf="@+id/button6" />
+        app:layout_constraintStart_toEndOf="@+id/imageView6" />
 
     <EditText
         android:id="@+id/editTextTextMultiLine"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:lines="2"
+        android:background="@drawable/border"
         android:ems="10"
-        android:textSize="14sp"
         android:gravity="start|top"
         android:hint="@string/type_description"
         android:inputType="textMultiLine"
-        android:background="@drawable/border"
-        android:maxLength="20"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:maxLength="50"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/imageView2"
-        app:layout_constraintTop_toBottomOf="@+id/imageView1" />
+        app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
     <EditText
         android:id="@+id/editTextTextMultiLine2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:maxLength="20"
-        android:ems="10"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/border"
+        android:ems="10"
         android:gravity="start|top"
-        android:textSize="14sp"
-        android:inputType="textMultiLine"
         android:hint="@string/type_description"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView3"
-        app:layout_constraintEnd_toStartOf="@+id/button3"
+        android:inputType="textMultiLine"
+        android:maxLength="20"
+        android:lines="2"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toTopOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
     <EditText
         android:id="@+id/editTextTextMultiLine3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:textSize="14sp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/border"
-        android:maxLength="20"
+        android:ems="10"
         android:gravity="start|top"
-        android:inputType="textMultiLine"
         android:hint="@string/type_description"
+        android:inputType="textMultiLine"
+        android:maxLength="20"
+        android:textSize="14sp"
+        android:lines="2"
         app:layout_constraintBottom_toBottomOf="@+id/imageView4"
-        app:layout_constraintEnd_toStartOf="@+id/button4"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView4"
-        app:layout_constraintTop_toTopOf="@+id/imageView4" />
+        app:layout_constraintTop_toBottomOf="@+id/textView9"
+        app:layout_constraintVertical_bias="0.01999998" />
 
     <EditText
         android:id="@+id/editTextTextMultiLine4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:textSize="14sp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/border"
-        android:maxLength="20"
+        android:ems="10"
+        android:lines="2"
         android:gravity="start|top"
-        android:inputType="textMultiLine"
         android:hint="@string/type_description"
+        android:inputType="textMultiLine"
+        android:maxLength="20"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
-        app:layout_constraintEnd_toStartOf="@+id/button5"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView5"
-        app:layout_constraintTop_toTopOf="@+id/imageView5" />
+        app:layout_constraintTop_toBottomOf="@+id/textView10"
+        app:layout_constraintVertical_bias="0.0" />
 
     <EditText
         android:id="@+id/editTextTextMultiLine5"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:textSize="14sp"
-        android:hint="@string/type_description"
-        android:maxLength="20"
+        android:layout_marginTop="8dp"
         android:background="@drawable/border"
+        android:ems="10"
         android:gravity="start|top"
+        android:lines="2"
+        android:hint="@string/type_description"
         android:inputType="textMultiLine"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView6"
-        app:layout_constraintEnd_toStartOf="@+id/button6"
+        android:maxLength="20"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.52"
         app:layout_constraintStart_toEndOf="@+id/imageView6"
-        app:layout_constraintTop_toBottomOf="@+id/imageView5" />
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
-
+    </androidx.core.widget.NestedScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

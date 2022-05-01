@@ -1,28 +1,15 @@
 package com.tostech.artisan.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.add
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import androidx.viewpager.widget.ViewPager
-import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.tostech.artisan.AdapterClasses.ImagePagerAdapter
-import com.tostech.artisan.R
-import com.tostech.artisan.databinding.FragmentHomeBinding
 import com.tostech.artisan.databinding.FragmentPagerBinding
-import com.tostech.artisan.ui.home.HomeFragment
-
 
 class ImagePagerFragment : Fragment() {
- //   private var viewPager: ViewPager? = null
 
     private var imageRes: ArrayList<String>? = null
     private var userId: String? = null
@@ -57,7 +44,7 @@ class ImagePagerFragment : Fragment() {
             }
             viewPager.setCurrentItem(currentPage++, true)
 
-            viewPager.adapter = ImagePagerAdapter(requireContext(), imageRes!!, txtRes!!)
+           viewPager.adapter = ImagePagerAdapter(requireContext(), imageRes!!, txtRes!!)
            viewPager.currentItem = position!!
 
             viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
@@ -77,27 +64,8 @@ class ImagePagerFragment : Fragment() {
                     super.onPageScrollStateChanged(state)
                 }
             })
-        val  callback = object :OnBackPressedCallback(true){
-            override fun handleOnBackPressed() {
-                if (backPressed) {
-                    val activity = context as AppCompatActivity
-                    val bundle = bundleOf("signInID" to userId)
 
-                    val fm = activity.supportFragmentManager.commit {
-                        setReorderingAllowed(true)
-                        add<HomeFragment>(R.id.constraint_main,  args = bundle)
-                            .addToBackStack(null)
-
-                    }
-                } else {
-                    backPressed = false
-
-                }
-            }}
-
-                requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-
-          return binding.root
+                    return binding.root
         }
 
     override fun onDestroy() {

@@ -3,60 +3,80 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:name="Artisan Category"
     >
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_category"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?android:windowBackground"
-        >
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycle_category"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingEnd="@dimen/card_side_margin"
-        android:paddingStart="@dimen/card_side_margin"
-        android:paddingTop="@dimen/header_margin"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="@integer/grid_columns"
-        tools:listitem="@layout/cat_list"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_category"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/app_background">
 
-    <com.reddit.indicatorfastscroll.FastScrollerView
-        android:id="@+id/fastScroller"
-        android:layout_width="32dp"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="0dp"
+                    android:layout_height="?android:attr/actionBarSize"
+                    android:background="?attr/colorPrimary"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    android:fitsSystemWindows="true"
+                    app:layout_scrollFlags="scroll|enterAlways"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-    <com.reddit.indicatorfastscroll.FastScrollerView
-        android:id="@+id/sample_basic_fastscroller"
-        android:layout_width="32dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+                <com.google.android.gms.ads.AdView
+                    android:id="@+id/ad_view_cat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    ads:adSize="BANNER"
+                    ads:adUnitId="@string/real_banner_admob_add_id"
+                    ads:layout_constraintEnd_toEndOf="parent"
+                    ads:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-    <com.reddit.indicatorfastscroll.FastScrollerThumbView
-        android:id="@+id/sample_basic_fastscroller_thumb"
-        android:layout_width="40dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/sample_basic_fastscroller"
-        app:layout_constraintEnd_toStartOf="@+id/sample_basic_fastscroller"
-        app:layout_constraintTop_toTopOf="@+id/sample_basic_fastscroller"
-        />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycle_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:clipToPadding="false"
+                    android:paddingStart="@dimen/card_side_margin"
+                    android:paddingTop="@dimen/header_margin"
+                    android:paddingEnd="@dimen/card_side_margin"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/toolbar"
+                    app:layout_constraintBottom_toTopOf="@id/ad_view_cat"
+                    app:spanCount="@integer/grid_columns"
+                    tools:listitem="@layout/cat_grid" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <com.reddit.indicatorfastscroll.FastScrollerView
+                    android:id="@+id/fastScroller"
+                    android:layout_width="32dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+                <com.reddit.indicatorfastscroll.FastScrollerView
+                    android:id="@+id/sample_basic_fastscroller"
+                    android:layout_width="32dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+                <com.reddit.indicatorfastscroll.FastScrollerThumbView
+                    android:id="@+id/sample_basic_fastscroller_thumb"
+                    android:layout_width="40dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="16dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/sample_basic_fastscroller"
+                    app:layout_constraintEnd_toStartOf="@+id/sample_basic_fastscroller"
+                    app:layout_constraintTop_toTopOf="@+id/sample_basic_fastscroller" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

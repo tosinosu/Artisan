@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        android:background="@android:color/white"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@color/app_background"
         android:id="@+id/home_layout"
-        android:name=".ui.home.HomeFragment"
-        tools:ignore="MergeRootFrame">
-
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:name="Home"
+        tools:ignore="MergeRootFrame"
+    >
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/plant_detail_app_bar_height"
-            android:fitsSystemWindows="true"
+            app:layout_collapseMode="parallax"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             android:stateListAnimator="@animator/show_toolbar"
             android:background="?attr/colorSurface"
@@ -33,7 +37,7 @@
                 app:collapsedTitleGravity="center"
                 app:collapsedTitleTextAppearance="@style/TextAppearance.Sunflower.Toolbar.Text"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:title="Banner"
+                app:title="Artisan"
                 app:titleEnabled="false"
                 app:toolbarId="@id/toolbar">
 
@@ -45,7 +49,7 @@
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
                     app:layout_collapseMode="parallax"
-                    android:src="@drawable/passport1_background"
+                    android:src="@drawable/ic_baseline_person_24"
                     tools:srcCompat="@tools:sample/avatars" />
 
 
@@ -54,7 +58,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     android:background="@android:color/transparent"
-                    app:titleTextColor="?attr/colorOnSurface"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    app:titleTextColor="?attr/colorOnPrimary"
                     app:layout_collapseMode="pin"
                     app:contentInsetStartWithNavigation="0dp"
                     app:navigationIcon="@drawable/ic_detail_back"
@@ -64,6 +69,50 @@
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabMessage"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:tint="@android:color/white"
+            app:shapeAppearance="@style/ShapeAppearance.Sunflower.FAB"
+            app:layout_anchor="@id/appbar"
+            app:layout_anchorGravity="bottom|end"
+            app:behavior_autoHide="false"
+            app:srcCompat="@android:drawable/ic_dialog_email" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profilepix"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            android:layout_width="144dp"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_baseline_person_24"
+            app:civ_border_color="@color/colorSecondary"
+            app:civ_border_width="3dp"
+            app:layout_anchor="@id/appbar"
+            app:layout_anchorGravity="center|bottom"
+            app:shapeAppearance="@style/ShapeAppearance.Sunflower.PF"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/margin_small"
+            android:contentDescription="Request"
+            android:elevation="2dp"
+            app:shapeAppearance="@style/ShapeAppearance.Sunflower.FAB"
+            app:layout_anchor="@id/appbar"
+            app:behavior_autoHide="false"
+            app:layout_anchorGravity="start|bottom"
+            android:background="@color/colorOrange"
+            app:srcCompat="@drawable/ic_baseline_add_shopping_cart_24"
+            app:rippleColor="@android:color/holo_green_light" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/plant_detail_scrollview"
@@ -76,6 +125,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:elevation="@dimen/cardview_default_radius"
                 android:layout_margin="@dimen/margin_normal">
 
                 <TextView
@@ -94,8 +144,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                      />
 
-
-
                 <androidx.appcompat.widget.AppCompatRatingBar
                     android:id="@+id/rating"
                     android:layout_width="wrap_content"
@@ -110,8 +158,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/businessNametxt" />
-
-
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnComment"
@@ -142,194 +188,21 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/workDescription"/>
-                <!--
-                <HorizontalScrollView
-                    android:id="@+id/pixRecycle"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/workDescription" >
-
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:elevation="12dp"
-                        android:background="@color/rave_lightish_grey_bg"
-                        android:orientation="horizontal">
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/ly1"
-                            android:layout_width="100dp"
-                            android:layout_height="150dp"
-                            android:orientation="vertical"
-                            android:padding="4dp"
-                            app:layout_constraintEnd_toStartOf="@+id/ly2"
-                            app:layout_constraintHorizontal_bias="0.5"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
-
-                            <ImageView
-                                android:id="@+id/advertPix1"
-                                android:layout_width="0dp"
-                                android:layout_height="130dp"
-                                app:layout_constraintBottom_toTopOf="@+id/advertText1"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="1.0" />
-
-                            <TextView
-                                android:id="@+id/advertText1"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="@+id/advertPix1"
-                                app:layout_constraintStart_toStartOf="parent" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/ly2"
-                            android:layout_width="100dp"
-                            android:layout_height="150dp"
-                            android:orientation="vertical"
-
-                            android:padding="4dp"
-                            app:layout_constraintEnd_toStartOf="@+id/ly3"
-                            app:layout_constraintHorizontal_bias="0.5"
-                            app:layout_constraintStart_toEndOf="@+id/ly1"
-                            app:layout_constraintTop_toTopOf="@+id/ly1">
-
-                            <ImageView
-                                android:id="@+id/advertPix2"
-                                android:layout_width="0dp"
-                                android:layout_height="130dp"
-                                app:layout_constraintBottom_toTopOf="@+id/advertText2"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="1.0" />
-
-                            <TextView
-                                android:id="@+id/advertText2"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="@+id/advertPix2"
-                                app:layout_constraintStart_toStartOf="@+id/advertPix2" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/ly3"
-                            android:layout_width="100dp"
-                            android:layout_height="150dp"
-                            android:orientation="vertical"
-
-                            android:padding="4dp"
-                            app:layout_constraintEnd_toStartOf="@+id/ly4"
-                            app:layout_constraintHorizontal_bias="0.5"
-                            app:layout_constraintStart_toEndOf="@+id/ly2"
-                            app:layout_constraintTop_toTopOf="@+id/ly2">
-
-                            <ImageView
-                                android:id="@+id/advertPix3"
-                                android:layout_width="0dp"
-                                android:layout_height="130dp"
-                                app:layout_constraintBottom_toTopOf="@+id/advertText3"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="1.0" />
-
-                            <TextView
-                                android:id="@+id/advertText3"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="@+id/advertPix3"
-                                app:layout_constraintStart_toStartOf="@+id/advertPix3" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/ly4"
-                            android:layout_width="100dp"
-                            android:layout_height="150dp"
-                            android:orientation="vertical"
-                            android:padding="4dp"
-                            app:layout_constraintEnd_toStartOf="@+id/ly5"
-                            app:layout_constraintHorizontal_bias="0.5"
-                            app:layout_constraintStart_toEndOf="@+id/ly3"
-                            app:layout_constraintTop_toTopOf="@+id/ly3">
-
-                            <ImageView
-                                android:id="@+id/advertPix4"
-                                android:layout_width="0dp"
-                                android:layout_height="130dp"
-                                app:layout_constraintBottom_toTopOf="@+id/advertText4"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent" />
-
-                            <TextView
-                                android:id="@+id/advertText4"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="@+id/advertPix4"
-                                app:layout_constraintStart_toStartOf="@+id/advertPix4" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/ly5"
-                            android:layout_width="100dp"
-                            android:layout_height="150dp"
-                            android:orientation="vertical"
-
-                            android:padding="4dp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.5"
-                            app:layout_constraintStart_toEndOf="@+id/ly4"
-                            app:layout_constraintTop_toTopOf="@+id/ly4">
-
-                            <ImageView
-                                android:id="@+id/advertPix5"
-                                android:layout_width="0dp"
-                                android:layout_height="130dp"
-                                app:layout_constraintBottom_toTopOf="@+id/advertText5"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"/>
-
-                            <TextView
-                                android:id="@+id/advertText5"
-                                android:layout_width="match_parent"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="@+id/advertPix5"
-                                app:layout_constraintStart_toStartOf="parent"
-                                android:layout_height="wrap_content" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </HorizontalScrollView>
--->
-
 
                 <TextView
                     android:id="@+id/workDescription"
                     style="?android:attr/textAppearanceMedium"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_small"
                     android:layout_marginTop="@dimen/margin_small"
                     android:layout_marginEnd="@dimen/margin_small"
                     android:textIsSelectable="true"
+                    android:gravity="center"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/btnComment"
-                    tools:text="Details about the plant" />
+                    tools:text="Details about the advert" />
 
 
 
@@ -471,12 +344,13 @@
 
                 <TextView
                     android:id="@+id/txtAddress"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:gravity="center"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="@+id/imBtnAddress"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toEndOf="@+id/imBtnAddress"
                     app:layout_constraintTop_toTopOf="@+id/imBtnAddress" />
 
@@ -519,49 +393,6 @@
 
         </androidx.core.widget.NestedScrollView>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabMessage"
-            style="@style/Widget.MaterialComponents.FloatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
-            android:tint="@android:color/white"
-            app:shapeAppearance="@style/ShapeAppearance.Sunflower.FAB"
-            app:layout_anchor="@id/appbar"
-            app:layout_anchorGravity="bottom|end"
-            app:behavior_autoHide="false"
-            app:srcCompat="@android:drawable/ic_dialog_email" />
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profilepix"
-            style="@style/Widget.MaterialComponents.FloatingActionButton"
-            android:layout_width="144dp"
-            android:layout_height="150dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_baseline_person_24"
-            app:civ_border_color="@android:color/white"
-            app:civ_border_width="3dp"
-            app:layout_anchor="@id/appbar"
-            app:layout_anchorGravity="center|bottom"
-            app:shapeAppearance="@style/ShapeAppearance.Sunflower.PF"
-            tools:srcCompat="@tools:sample/avatars" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnOrder"
-        style="@style/Widget.MaterialComponents.FloatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_normal"
-        android:layout_marginEnd="@dimen/margin_small"
-        android:contentDescription="Request"
-        android:elevation="2dp"
-        app:layout_anchor="@id/appbar"
-        app:layout_collapseMode="parallax"
-        app:layout_anchorGravity="start|bottom"
-        app:rippleColor="@color/colorAccent" />
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-<!--
-    </androidx.fragment.app.FragmentContainerView>
+
 </layout>
--->

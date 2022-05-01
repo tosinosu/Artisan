@@ -2,32 +2,35 @@ package com.tostech.artisan.ui.messages
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
+//import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
-import com.tostech.artisan.AdapterClasses.AdvertAdapter
+import com.tostech.artisan.AdapterClasses.MessageAdapter
+import com.tostech.artisan.MainActivity
+import com.tostech.artisan.R
+import com.tostech.artisan.data.AdvertData
+import com.tostech.artisan.data.Chat
+import com.tostech.artisan.data.ChatList
+import com.tostech.artisan.data.MessageData
 import com.tostech.artisan.databinding.FragmentMessagesBinding
 import com.tostech.artisan.notification.FirebaseService
-import android.content.Intent
-import android.widget.Toast
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.tostech.artisan.AdapterClasses.MessageAdapter
-import com.tostech.artisan.data.*
-//import com.tostech.artisan.ui.profile.intent
-import kotlinx.android.synthetic.main.fragment_messages.*
 
 
 class MessagesFragment : Fragment() {
@@ -35,18 +38,14 @@ class MessagesFragment : Fragment() {
 
     private var _binding: FragmentMessagesBinding? = null
     private val binding get() = _binding!!
-
+    lateinit var mActivity: FragmentActivity
     private var messageAdapter: MessageAdapter? = null
     private var mUsers: List<MessageData>? = null
     private var usersChatList: List<ChatList>? = ArrayList()
     private var chats: List<Chat>? = ArrayList()
-
     private var firebaseUser: FirebaseUser? = null
     private lateinit var reference: DatabaseReference
     lateinit var recyclerChatList: RecyclerView
-
-
-    val gson = Gson()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -99,6 +98,25 @@ class MessagesFragment : Fragment() {
         return binding.root
     }
 
+    private fun setUpToolbar() {
+        val mainActivity = mActivity as MainActivity
+        val  navigationView : NavigationView? = mActivity.findViewById(R.id.nav_view)
+        mainActivity.setSupportActionBar(binding.toolbar)
+        val navController = NavHostFragment.findNavController(this)
+        val appBarConfiguration =  mainActivity.appBarConfiguration
+        NavigationUI.setupActionBarWithNavController(mainActivity, navController, appBarConfiguration!!)
+        NavigationUI.setupWithNavController(navigationView!!,navController)
+
+        setHasOptionsMenu(true)
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpToolbar()
+    }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        activity?.let { mActivity = it}
+    }
     private fun  retrieveChatList(){
 
       //  Log.v("ChatsArray", arrayList.size.toString())
@@ -131,7 +149,7 @@ class MessagesFragment : Fragment() {
                   //  recyclerChatList.adapter!!.notifyDataSetChanged()
 
                 } catch (ex: NullPointerException){
-                    Log.e("Chat Exception", ex.toString())
+                    //Log.e("Chat Exception", ex.toString())
                 }
             }
 

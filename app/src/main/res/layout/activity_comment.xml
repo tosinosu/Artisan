@@ -2,42 +2,40 @@
 <layout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    >
-<androidx.constraintlayout.widget.ConstraintLayout
+    android:name=".Comment"
 
-    tools:context=".CommentActivity"
+    >
+<!--
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+-->
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/layout_comment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:background="@android:color/white"
+    app:background="@color/app_background"
+
     >
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/barLayout_comment"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:foregroundTint="@color/colorOnPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:fitsSystemWindows="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar_comment"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimaryDark"
-            android:gravity="center_vertical"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
-
-
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteY="-16dp" />
 
     <EditText
         android:id="@+id/edtComment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="4dp"
         android:ems="10"
         android:gravity="start|top"
@@ -46,27 +44,30 @@
         app:layout_constraintEnd_toStartOf="@+id/btnSubmit"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/barLayout_comment" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcyComment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        tools:listitem="@layout/comment_list"
+        android:layout_marginTop="4dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtComment"
-        app:layout_constraintVertical_bias="1.0" />
+        tools:listitem="@layout/comment_list" />
 
     <Button
         android:id="@+id/btnSubmit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Submit"
+        android:backgroundTint="@color/colorSecondary"
+        android:textColor="@color/colorOnSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/edtComment"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/edtComment" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+<!--</ScrollView>-->
 </layout>

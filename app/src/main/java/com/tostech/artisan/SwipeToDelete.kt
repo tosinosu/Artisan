@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.util.Log
+//import android.util.Log
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
@@ -51,7 +51,7 @@ abstract class SwipeToDelete(var context: Context, dragDir: Int, swipeDir: Int) 
         dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
     ) {
 
-        Log.d("onChildDraw", "dx: " + dX)
+  //      Log.d("onChildDraw", "dx: " + dX)
 
         val itemView = viewHolder.itemView
         if (!initiated) {

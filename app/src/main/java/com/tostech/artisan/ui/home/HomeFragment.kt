@@ -1,28 +1,36 @@
 package com.tostech.artisan.ui.home
 
 
+import android.Manifest
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+//import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AlertDialog
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ShareCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -34,34 +42,37 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.ktx.storage
-import com.tostech.artisan.*
+import com.kv.popupimageview.PopupImageView
 import com.tostech.artisan.AdapterClasses.GridAdapter
+import com.tostech.artisan.MessageChatActivity
 import com.tostech.artisan.R
 import com.tostech.artisan.data.*
 import com.tostech.artisan.databinding.FragmentHomeBinding
+import com.tostech.artisan.utils.checkSelfPermissionCompat
+import com.tostech.artisan.utils.requestPermissionsCompat
+import com.tostech.artisan.utils.shouldShowRequestPermissionRationaleCompat
 import de.hdodenhof.circleimageview.CircleImageView
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_profile.*
 
+const val PERMISSION_REQUEST_PHONE = 0
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
-
-    private lateinit var homeViewModel: HomeViewModel
-
+class HomeFragment : Fragment(), ActivityCompat.OnRequestPermissionsResultCallback {
 
     private var isLargeLayout: Boolean = false
 
     var storageRef = Firebase.storage.reference
     var databaseRef = Firebase.database.reference
     var userId: String? = null
-     var countryy: String? =null
-     var statee: String? =null
-     var lgaa: String? =null
-    private lateinit var messagesList: ArrayList<String>
+    var countryy: String? = null
+    var statee: String? = null
+    var lgaa: String? = null
     val myfirebaseUserID = FirebaseAuth.getInstance().uid
     private lateinit var advertText: Array<String>
     private lateinit var advertUrl: Array<String>
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    var profilePix: CircleImageView? = null
+    var logo: ImageView? = null
 
 
 
@@ -71,14 +82,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         savedInstanceState: Bundle?
     ): View? {
 
-         _binding = FragmentHomeBinding.inflate(inflater, container, false).apply {
+        _binding = FragmentHomeBinding.inflate(inflater, container, false).apply {
+           // hideAppBarFab(fabMessage)
+           // hideAppBarFab(btnOrder)
 
             var isToolbarShown = false
-
-
-             (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-
-            // hideAppBarFab(profilepix)
+            userId = arguments?.getString("signInID")
 
             // scroll change listener begins at Y = 0 when image is fully collapsed
             plantDetailScrollview.setOnScrollChangeListener(
@@ -86,7 +95,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                     // User scrolled past image to height of toolbar and the title text is
                     // underneath the toolbar, so the toolbar should be shown.
-                    val shouldShowToolbar = scrollY > toolbar.height
+                    val shouldShowToolbar = scrollY > binding.toolbar.height
                     if (shouldShowToolbar) {
                         binding.profilepix.isGone = true
                     } else {
@@ -99,63 +108,88 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         isToolbarShown = shouldShowToolbar
                         // Use shadow animator to add elevation if toolbar is shown
                         appbar.isActivated = shouldShowToolbar
+
                         // Show the plant name if toolbar is shown
                         toolbarLayout.isTitleEnabled = shouldShowToolbar
                     }
                 }
             )
+            //val fragment = arguments?.getString("category")
+          //      Log.d("fragmentdebug", fragment.toString())
 
             toolbar.setNavigationOnClickListener { view ->
-                val intent = Intent(context, MainActivity::class.java)
-                startActivity(intent)
+                view.findNavController().navigateUp()
+            }
+
+            if (!checkNetwork()){
+                toast("No network connection")
             }
 
             toolbar.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.action_share -> {
-                        createShareIntent()
+                        databaseRef.child("User/$userId/advert/bus_name").addValueEventListener( object: ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if(snapshot.exists()) {
+                                    val businessName = snapshot.getValue(String::class.java)
+                                    createShareIntent(businessName)
+                                }else{
+                                    toast("Cannot share at this time")
+                                }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                                //  Log.w("Database", "loadPost:onCancelled", error.toException())
+                            }
+                        })
                         true
                     }
                     else -> false
                 }
             }
+
         }
+
+
         isLargeLayout = resources.getBoolean(R.bool.large_layout)
-        val profilePix = binding.profilepix
+        val imageLayout = layoutInflater.inflate(R.layout.pix_list, null)
+        val bannerLayout = layoutInflater.inflate(R.layout.pix_banner, null)
+        val builder = AlertDialog.Builder(requireActivity())
+         profilePix = binding.profilepix
+        val imageView = imageLayout.findViewById<ImageView>(R.id.pix)
 
-        val logo = binding.logoPix
+         logo = binding.logoPix
+
+        profilePix!!.setOnClickListener {
+            storageRef.child("$userId/images/profile_pix.jpg").downloadUrl.addOnSuccessListener { i ->
+                PopupImageView(requireContext(), view, i.toString())
+
+            }
 
 
-        userId = arguments?.getString("signInID")
+        }
+        logo!!.setOnClickListener {
+            storageRef.child("$userId/images/logo.jpg").downloadUrl.addOnSuccessListener { i ->
+                PopupImageView(requireContext(), view, i.toString())
+
+            }
+        }
+
 
         binding.btnComment.setOnClickListener {
-            val bundle = bundleOf()
-            val intent = Intent(requireContext(), CommentActivity::class.java)
-            intent.putExtra("visit_id", userId)
+           // val action = HomeFragmentDirections
+            val bundle = bundleOf("visit_id" to userId, "my_id" to myfirebaseUserID)
+            findNavController().navigate(R.id.action_homeFragment_to_commentFragment, bundle)
 
-            startActivity(intent)
 
         }
 
-
-
         val ref = databaseRef.child("User/$userId/accepted_order").child(userId!!)
-
 
         ref.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // accepted_list_array.clear()
                 val acceptedData = dataSnapshot.getValue<AcceptedData>()
-                /*for(IDs in dataSnapshot.children) {
-                    val accept_list = IDs.getValue(String::class.java)
-                    if (accept_list != null) {
-                        accepted_list_array.add(accept_list)
-
-                    }
-                    else
-                        Log.v("ordArray", "Array is empty")
-                }*/
                 try {
                     if (acceptedData!!.rated == 1) {
                         binding.rating.setIsIndicator(true)
@@ -167,16 +201,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             binding.rating.setIsIndicator(true)
                         }
                     }
-                    /* Log.v("ordArray", accepted_list_array.toString())
-                for (i in accepted_list_array){
-                    if (i == firebaseUser){
-                        binding.rating.setIsIndicator(false)
-                    }
-                    else
-                        binding.rating.setIsIndicator(true)
-                }*/
+
                 } catch (ex: NullPointerException) {
-                    Log.v("RatingDebug", "Null pointer")
+                //    Log.v("RatingDebug", "Null pointer")
 
                     binding.rating.setIsIndicator(true)
 
@@ -184,46 +211,50 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
 
             override fun onCancelled(p0: DatabaseError) {
-                Log.w("AcceptedOrder", "Cancelled", p0.toException())
+                //Log.w("AcceptedOrder", "Cancelled", p0.toException())
             }
         })
 
-        binding.rating.onRatingBarChangeListener =
+
+
+            binding.rating.onRatingBarChangeListener =
             RatingBar.OnRatingBarChangeListener { p0, rating, fromUser ->
                 if (fromUser)
-                rate(rating)
+                    rate(rating)
             }
 
-        if (userId == myfirebaseUserID){
-            fabMessage.visibility = View.GONE
+        if (userId == myfirebaseUserID) {
+            binding.fabMessage.visibility = View.GONE
             binding.btnOrder.visibility = View.GONE
             binding.rating.visibility = View.GONE
         }
-                 storageRef.child("$userId/images/profile_pix.jpg").downloadUrl.addOnSuccessListener { i ->
-                    Glide.with(requireContext()).load(i.toString())
-                        .apply(RequestOptions().placeholder(R.drawable.ic_baseline_person_24))
-                        .into(profilePix)
-                 }
 
+        storageRef.child("$userId/images/profile_pix.jpg").downloadUrl.addOnSuccessListener { i ->
 
+                showImageDialog(i, profilePix)
 
-        if(userId != null) {
+          }
 
+        storageRef.child("$userId/images/logo.jpg").downloadUrl.addOnSuccessListener { i ->
+            showImageDialog(i, logo)
+            }
+
+        if (userId != null) {
             // Call Advert database
+           // val username = databaseRef.child("User/$userId/user/fname")
             val busName = databaseRef.child("User/$userId/advert/bus_name")
             val advert = databaseRef.child("User/$userId/advert/description")
             val order = databaseRef.child("User/$userId/advert/order").child(userId!!)
-
             //Contact database
             val phone = databaseRef.child("User/$userId/contact/phone")
             val office_address = databaseRef.child("User/$userId/contact/office_address")
             val whatsapp = databaseRef.child("User/$userId/contact/whatsapp")
-            val facebook =  databaseRef.child("User/$userId/contact/facebook")
+            val facebook = databaseRef.child("User/$userId/contact/facebook")
             val twitter = databaseRef.child("User/$userId/contact/twitter")
-            val instagram =  databaseRef.child("User/$userId/contact/instagram")
-            val other =  databaseRef.child("User/$userId/contact/other")
+            val instagram = databaseRef.child("User/$userId/contact/instagram")
+            val other = databaseRef.child("User/$userId/contact/other")
 
-
+            getArtisanName(busName)
             getOrder(order, binding.btnOrder)
             getAdvert(busName, binding.businessNametxt)
             getAdvert(advert, binding.workDescription)
@@ -234,18 +265,48 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             getAdvert(twitter, binding.txtTwitter)
             getAdvert(instagram, binding.txtInstagram)
             getAdvert(other, binding.txtOtherLink)
-        }
-            else
+        } else
             Toast.makeText(
                 context,
                 "Please Register or Sign In to your account",
                 Toast.LENGTH_SHORT
             ).show()
 
-            listFiles()
+        listFiles()
 
         val reference = FirebaseDatabase.getInstance().reference
             .child("User").child(userId!!).child("user").child("username")
+
+        val referenceID = databaseRef.child("User/$userId/order/$myfirebaseUserID/uid")
+        val dataListenerID = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val uid = snapshot.getValue(String::class.java)
+
+                if(uid == myfirebaseUserID){
+                    try {
+                        binding.btnOrder.backgroundTintList = ColorStateList.valueOf(Color.GREEN)
+                        toast("Service Requested")
+                    }catch (ex: NullPointerException){
+                        ex.printStackTrace()
+                    }
+
+                }else{
+                    try {
+                    binding.btnOrder.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorOrange))
+                    }catch (ex: NullPointerException){
+                        ex.printStackTrace()
+                    }
+                    }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
+                //Log.w("Database", "loadPost:onCancelled", error.toException())
+            }
+        }
+
+        referenceID.addValueEventListener(dataListenerID)
 
         binding.btnOrder.setOnClickListener {
             order(userId!!)
@@ -257,7 +318,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val username = snapshot.value.toString()
 
-                    Log.d("username", username)
+                  //  Log.d("username", username)
                     intent.putExtra("visit_id", userId)
                     intent.putExtra("username", username)
                     startActivity(intent)
@@ -271,13 +332,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
 
         binding.txtPhone.setOnClickListener {
-            val intent = Intent(Intent.ACTION_DIAL)
-            intent.data = Uri.parse("tel:${binding.txtPhone.text}")
-            try {
-                startActivity(intent)
-            }catch (ex: ActivityNotFoundException){
-                toast("No application to display number")
-            }
+           showPhonePreview()
         }
         binding.txtAddress.setOnClickListener {
             val longLat = databaseRef.child("User").child(userId!!).child("contact")
@@ -285,14 +340,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         val addressObj = snapshot.getValue<AddressData>()
-                        Toast.makeText(
+                       /* Toast.makeText(
                             context,
                             "lat=${addressObj!!.latitude}, long=${addressObj!!.longitude}",
                             Toast.LENGTH_SHORT
-                        ).show()
+                        ).show()*/
+                        val latitude = addressObj!!.latitude
 
-                        if (addressObj!!.latitude != 0.0 && addressObj!!.longitude != 0.0) {
-                            populateLatLong(addressObj!!.latitude, addressObj!!.longitude)
+                        val longitude = addressObj!!.longitude
+
+                        if (latitude != 0.0 && longitude != 0.0) {
+                            populateLatLong(latitude, longitude)
                         } else {
                             Toast.makeText(context, "Address not found on map", Toast.LENGTH_SHORT)
                                 .show()
@@ -312,14 +370,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 intent.`package` = "com.facebook.katana"
                 intent.data = Uri.parse("fb://facewebmodal/f?href=${binding.txtFacebook.text}")
 
-                if (binding.txtFacebook.text.contains("fb://")){
-                intent.data = Uri.parse("${binding.txtFacebook.text}")
-            }
-            if (binding.txtFacebook.text.contains("https://")){
-                intent.data = Uri.parse("${binding.txtFacebook.text}")
-            }
+                if (binding.txtFacebook.text.contains("fb://")) {
+                    intent.data = Uri.parse("${binding.txtFacebook.text}")
+                }
+                if (binding.txtFacebook.text.contains("https://")) {
+                    intent.data = Uri.parse("${binding.txtFacebook.text}")
+                }
                 startActivity(intent)
-            }catch (ex: ActivityNotFoundException){
+            } catch (ex: ActivityNotFoundException) {
 
                 startActivity(
                     Intent(
@@ -333,12 +391,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.txtTwitter.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
             try {
-                    intent.`package` = "com.twitter.android"
-                    intent.data = Uri.parse("twitter://user?screen_name=${binding.txtTwitter.text}")
+                intent.`package` = "com.twitter.android"
+                intent.data = Uri.parse("twitter://user?screen_name=${binding.txtTwitter.text}")
 
-                    startActivity(intent)
+                startActivity(intent)
 
-            }catch (ex: ActivityNotFoundException){
+            } catch (ex: ActivityNotFoundException) {
 
                 startActivity(
                     Intent(
@@ -351,45 +409,45 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         binding.txtWhatsApp.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
-          try {
-              intent.`package` = "com.whatsapp"
-              if (binding.txtWhatsApp.text.contains("https://")){
-                  intent.data = Uri.parse("${binding.txtWhatsApp.text}")
-              }
-              if (!binding.txtWhatsApp.text.contains("https://")){
-                  intent.data = Uri.parse("https://${binding.txtWhatsApp.text}")
-              }
+            try {
+                intent.`package` = "com.whatsapp"
+                if (binding.txtWhatsApp.text.contains("https://")) {
+                    intent.data = Uri.parse("${binding.txtWhatsApp.text}")
+                }
+                if (!binding.txtWhatsApp.text.contains("https://")) {
+                    intent.data = Uri.parse("https://${binding.txtWhatsApp.text}")
+                }
 
-              startActivity(intent)
+                startActivity(intent)
 
-          }catch (ex: ActivityNotFoundException){
-              startActivity(
-                  Intent(
-                      Intent.ACTION_VIEW,
-                      Uri.parse("https://${binding.txtWhatsApp.text}")
-                  )
-              )
+            } catch (ex: ActivityNotFoundException) {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://${binding.txtWhatsApp.text}")
+                    )
+                )
 
-          }
+            }
 
         }
         binding.txtInstagram.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
             try {
                 intent.`package` = "com.whatsapp"
-                if (binding.txtInstagram.text.contains("https://")){
+                if (binding.txtInstagram.text.contains("https://")) {
                     intent.data = Uri.parse("${binding.txtInstagram.text}")
                 }
-                if (binding.txtInstagram.text.contains("instagram.com/")){
+                if (binding.txtInstagram.text.contains("instagram.com/")) {
                     intent.data = Uri.parse("https://${binding.txtInstagram.text}")
                 }
-                if (!binding.txtInstagram.text.contains("instagram.")){
+                if (!binding.txtInstagram.text.contains("instagram.")) {
                     intent.data = Uri.parse("https://instagram.com/_u/${binding.txtInstagram.text}")
                 }
 
                 startActivity(intent)
 
-            }catch (ex: ActivityNotFoundException){
+            } catch (ex: ActivityNotFoundException) {
                 startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
@@ -402,80 +460,117 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.txtOtherLink.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
 
-                intent.data = Uri.parse("http://${binding.txtOtherLink.text}")
+            intent.data = Uri.parse("http://${binding.txtOtherLink.text}")
             try {
                 startActivity(intent)
 
-            }catch (ex: ActivityNotFoundException){
+            } catch (ex: ActivityNotFoundException) {
                 toast("No browser installed")
             }
         }
 
 
+        val refDb = databaseRef.child("User").child(userId!!).child("advert")
+        refDb.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val advertImage = snapshot.getValue<AdvertImage>()
+                val advertText = snapshot.getValue<AdvertText>()
+                var imageAdverts : ArrayList<String>? = ArrayList()
+                var textAdverts : ArrayList<String>? = ArrayList()
 
-       val refDb = databaseRef.child("User").child(userId!!).child("advert")
-            refDb.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val advertImage = snapshot.getValue<AdvertImage>()
-                    val advertText = snapshot.getValue<AdvertText>()
-                    val imageAdverts = arrayListOf<String>(
-                        advertImage!!.image1, advertImage!!.image2, advertImage!!.image3,
-                        advertImage!!.image4, advertImage!!.image5
-                    )
-                    val textAdverts = arrayListOf<String>(
-                        advertText!!.advert1, advertText!!.advert2, advertText!!.advert3,
-                        advertText!!.advert4, advertText!!.advert5
-                    )
+                  try{
+                 imageAdverts = arrayListOf(
+                    advertImage!!.image1, advertImage.image2, advertImage.image3,
+                    advertImage.image4, advertImage.image5
+                )
 
-                    if (advertImage!!.image1 == "null" && advertImage!!.image2 == "null" && advertImage!!.image3 == "null" &&
-                    advertImage!!.image4 == "null" && advertImage!!.image5 == "null") {
+                 textAdverts = arrayListOf<String>(
+                    advertText!!.advert1, advertText!!.advert2, advertText!!.advert3,
+                    advertText!!.advert4, advertText!!.advert5
+                )
+                  }catch (ex: java.lang.NullPointerException){
+                      //Log.d("Homedebug", ex.printStackTrace().toString())
+                  }
+                try {
+                    if (advertImage!!.image1.isNullOrBlank() && advertImage!!.image2.isNullOrBlank() && advertImage!!.image3.isNullOrBlank() &&
+                        advertImage!!.image4.isNullOrBlank() && advertImage!!.image5.isNullOrBlank()
+                    ) {
                         binding.pixRecycle.visibility = View.GONE
                     } else {
                         showRec(imageAdverts, textAdverts)
                     }
+                }catch (ex: java.lang.NullPointerException){
+                  //  Log.d("HomeDebug", ex.printStackTrace().toString())
                 }
+            }
 
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
-
-
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(
-                true
-            ) {
-                override fun handleOnBackPressed() {
-                    val intent = Intent(context, MainActivity::class.java)
-                    startActivity(intent)
-                }
-            })
-
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
         return binding.root
     }
 
+    private fun getArtisanName(databaseReference: DatabaseReference) {
+        val dataListener = object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+               val  value = snapshot.getValue(String::class.java)
+               binding.toolbarLayout.title = value
+
+            }
+            override fun onCancelled(error: DatabaseError) {
+              //  Log.w("Database", "loadPost:onCancelled", error.toException())
+            }
+        }
+
+        databaseReference.addValueEventListener(dataListener)
+
+    }
+
+    private fun showImageDialog(i: Uri?, pix: ImageView?): String? {
+        try {
+        Glide.with(this).load(i.toString())
+            .apply(RequestOptions().placeholder(R.drawable.ic_baseline_person_24))
+            .into(pix!!)
+        }catch(ex: IllegalStateException){
+            //Log.d("Error", ex.message.toString())
+        }catch(ex: NullPointerException){
+        //    Log.d("Error", ex.message.toString())
+        }
+
+        return i.toString()
+    }
+
+    private fun requestPhone() {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:${binding.txtPhone.text}")
+        try {
+            startActivity(intent)
+        } catch (ex: ActivityNotFoundException) {
+            toast("No application to display number")
+        }
+    }
+
     private fun populateLatLong(latitude: Double, longitude: Double) {
-        val data = Uri.parse("geo:$latitude, $longitude")
+        val data = Uri.parse("geo:$latitude, $longitude?q=$latitude, $longitude")
         val intent = Intent(Intent.ACTION_VIEW, data)
 
         intent.`package` = "com.google.android.apps.maps"
-       intent.resolveActivity(requireActivity().packageManager)?.let {
-           startActivity(intent)
-       }
+        intent.resolveActivity(requireActivity().packageManager)?.let {
+            startActivity(intent)
+        }
     }
 
 
-    fun showRec(arrayImage: ArrayList<String>, arrayText: ArrayList<String>){
+    fun showRec(arrayImage: ArrayList<String>?, arrayText: ArrayList<String>?) {
 
         val gridLayout = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.pixRecycle.layoutManager = gridLayout
 
         binding.pixRecycle.adapter = GridAdapter(arrayImage, arrayText, userId!!, requireContext());
 
-       // prepareTransitions()
-       // postponeEnterTransition()
     }
-    private fun toast(message: String){
+
+    private fun toast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
@@ -483,24 +578,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onDestroy()
         _binding = null
     }
-/*
-    override fun onDetach() {
-        super.onDetach()
-        _binding = null
-    }*/
 
-    private fun createShareIntent() {
-        val shareText =
-            "Artisan"
-
-
-        val shareIntent = ShareCompat.IntentBuilder.from(requireActivity())
-            .setText(shareText)
-            .setType("text/plain")
-            .createChooserIntent()
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-        startActivity(shareIntent)
-    }
 
     private fun rate(rating: Float) {
 
@@ -514,7 +592,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     val ratTotScore = ratingData!!.rat_score + rating
                     val ratNumScore = ratingData!!.rat_number + 1
 
-                    Log.i("rattotscore", ratTotScore.toString())
+          //          Log.i("rattotscore", ratTotScore.toString())
                     databaseRef.child("User/$userId").child("rating").child("rat_score")
                         .setValue(ratTotScore)
                     databaseRef.child("User/$userId").child("rating").child("rat_number")
@@ -538,14 +616,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                 userQuery.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        /* for (snapshot in dataSnapshot.children) {
-                             if (snapshot.value == firebaseUser) {
-                                 //Log.d("Idtosnap", snapshot.toString())
-                                 //snapshot.ref.removeValue()
-                                 //toast("ID has been removed")
-                                 refDeleteOrder.child("Comment_Rat").child("rated").setValue(1)
-                             }
-                        }*/
+
                         val acceptedData = dataSnapshot.getValue(AcceptedData::class.java)
                         if (myfirebaseUserID == acceptedData!!.id) {
                             userQuery.child("rated").setValue(1)
@@ -564,30 +635,31 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         })
     }
 
-private fun ratingScore(){
+    private fun ratingScore() {
 
         val referenceRating = databaseRef.child("User/$userId/rating")
 
-        val dataListenerRating = object: ValueEventListener {
+        val dataListenerRating = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val ratingData = snapshot.getValue(RatingData::class.java)
-               try {
+                try {
 
-                   Log.v("ratdata", ratingData!!.rat_number.toString())
+            //        Log.v("ratdata", ratingData!!.rat_number.toString())
 
-                   val total_rating = ratingData!!.rat_score / ratingData!!.rat_number
+                    val total_rating = ratingData!!.rat_score / ratingData!!.rat_number
 
-                   binding.rating.rating = total_rating
+                    binding.rating.rating = total_rating
 
-               } catch (ex: NullPointerException){
-                   Log.v("ExceptionData", ex.message.toString())
-               } catch (ex: StorageException){
-                   Log.v("Exceptiondata", ex.message.toString())
-               }
+                } catch (ex: NullPointerException) {
+              //      Log.v("ExceptionData", ex.message.toString())
+                } catch (ex: StorageException) {
+                //    Log.v("Exceptiondata", ex.message.toString())
+                }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-                Log.w("Database", "loadPost:onCancelled", error.toException())
+                //Log.w("Database", "loadPost:onCancelled", error.toException())
             }
         }
 
@@ -598,19 +670,26 @@ private fun ratingScore(){
     private fun order(userId: String) {
 
         val referenceID = databaseRef.child("User/$myfirebaseUserID/advert/uid")
-
-
-        val dataListenerID = object: ValueEventListener {
+        val dataListenerID = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val uid = snapshot.getValue(String::class.java)
-                databaseRef.child("User").child(userId!!).child("order").child(myfirebaseUserID!!).child(
-                    "uid"
-                ).setValue(uid)
+                databaseRef.child("User").child(userId!!).child("order").child(myfirebaseUserID!!)
+                    .child(
+                        "uid"
+                    ).setValue(uid).addOnSuccessListener {
+                        try{
+                        binding.btnOrder.backgroundTintList = ColorStateList.valueOf(Color.GREEN)
+                        toast("Service Requested")
+                    }catch (ex: NullPointerException){
+                    ex.printStackTrace()
+                }
+                    }
 
             }
+
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-                Log.w("Database", "loadPost:onCancelled", error.toException())
+                Toast.makeText(context, "There was an error: Please try again", Toast.LENGTH_SHORT).show()
+//                Log.w("Database", "loadPost:onCancelled", error.toException())
             }
         }
 
@@ -619,40 +698,45 @@ private fun ratingScore(){
         //reference username
         val referenceUser = databaseRef.child("User/$myfirebaseUserID/user/username")
 
-        val dataListenerUser = object: ValueEventListener {
+        val dataListenerUser = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val username = snapshot.getValue(String::class.java)
 
 
-                databaseRef.child("User").child(userId!!).child("order").child(myfirebaseUserID!!).child(
-                    "username"
-                ).setValue(username)
+                databaseRef.child("User").child(userId!!).child("order").child(myfirebaseUserID!!)
+                    .child(
+                        "username"
+                    ).setValue(username)
             }
+
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-                Log.w("Database", "loadPost:onCancelled", error.toException())
+  //              Log.w("Database", "loadPost:onCancelled", error.toException())
             }
         }
 
         referenceUser.addValueEventListener(dataListenerUser)
 
-        databaseRef.child("User").child(userId!!).child("order").child(myfirebaseUserID!!).child("status").setValue(
+        databaseRef.child("User").child(userId!!).child("order").child(myfirebaseUserID!!)
+            .child("status").setValue(
             "requested"
         )
 
         val referencePurl = databaseRef.child("User/$myfirebaseUserID/advert/purl")
 
-        val dataListenerPurl = object: ValueEventListener {
+        val dataListenerPurl = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                 val purl = snapshot.getValue(String::class.java)
-                databaseRef.child("User").child(userId!!).child("order").child(myfirebaseUserID!!).child(
-                    "purl"
-                ).setValue(purl)
+                val purl = snapshot.getValue(String::class.java)
+                databaseRef.child("User").child(userId!!).child("order").child(myfirebaseUserID!!)
+                    .child(
+                        "purl"
+                    ).setValue(purl)
 
             }
+
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-                Log.w("Database", "loadPost:onCancelled", error.toException())
+    //            Log.w("Database", "loadPost:onCancelled", error.toException())
             }
         }
 
@@ -660,38 +744,16 @@ private fun ratingScore(){
 
     }
 
-
-    private fun updateStatus(status: String){
-             if (userId != null) {
-            var ref = FirebaseDatabase.getInstance().reference.child("User").child(userId!!).child("advert")
-            val hashMap = HashMap<String, Any>()
-            hashMap["status"] = status
-            ref!!.updateChildren(hashMap)
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         ratingScore()
-        updateStatus("online")
     }
 
     override fun onStart() {
         super.onStart()
         ratingScore()
     }
-
-    override fun onPause() {
-        super.onPause()
-        updateStatus("offline")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        updateStatus("offline")
-    }
-
-        fun getAdvert(reference: DatabaseReference, view: TextView) {
+    fun getAdvert(reference: DatabaseReference, view: TextView) {
                val dataListener = object: ValueEventListener {
                    override fun onDataChange(snapshot: DataSnapshot) {
                        val value = snapshot.getValue(String::class.java)
@@ -699,29 +761,29 @@ private fun ratingScore(){
 
                    }
                    override fun onCancelled(error: DatabaseError) {
-                       Log.w("Database", "loadPost:onCancelled", error.toException())
+    //                   Log.w("Database", "loadPost:onCancelled", error.toException())
                    }
                }
 
                reference.addValueEventListener(dataListener)
 
        }
-        fun getOrder(reference: DatabaseReference, view: Button) {
+        fun getOrder(reference: DatabaseReference, view: FloatingActionButton) {
 
                val dataListener = object: ValueEventListener {
                    override fun onDataChange(snapshot: DataSnapshot) {
                        val order = snapshot.getValue(Order::class.java)
                         try {
-                            view.text = order!!.status
+                            view.contentDescription = order!!.status
                         }
                         catch (ex: NullPointerException){
-                          view.text = "Request"
+                          view.contentDescription = "Request"
                         }
 
                    }
                    override fun onCancelled(error: DatabaseError) {
-                       Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-                       Log.w("Database", "loadPost:onCancelled", error.toException())
+      //                 Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
+        //               Log.w("Database", "loadPost:onCancelled", error.toException())
                    }
                }
 
@@ -736,8 +798,8 @@ private fun ratingScore(){
 
                            }
                            override fun onCancelled(error: DatabaseError) {
-                               Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-                               Log.w("Database", "loadPost:onCancelled", error.toException())
+          //                     Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
+            //                   Log.w("Database", "loadPost:onCancelled", error.toException())
                            }
                        }
 
@@ -767,8 +829,8 @@ private fun ratingScore(){
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-                        Log.w("Database", "loadPost:onCancelled", error.toException())
+              //          Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
+                //        Log.w("Database", "loadPost:onCancelled", error.toException())
                     }
                 }
 
@@ -784,8 +846,8 @@ private fun ratingScore(){
 
                            }
                            override fun onCancelled(error: DatabaseError) {
-                               Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-                               Log.w("Database", "loadPost:onCancelled", error.toException())
+                  //             Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
+                    //           Log.w("Database", "loadPost:onCancelled", error.toException())
                            }
                        }
 
@@ -801,16 +863,14 @@ private fun ratingScore(){
 
                            }
                            override fun onCancelled(error: DatabaseError) {
-                               Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-                               Log.w("Database", "loadPost:onCancelled", error.toException())
+                      //         Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
+                        //       Log.w("Database", "loadPost:onCancelled", error.toException())
                            }
                        }
 
                        reference.addValueEventListener(dataListener)
 
                }
-
-
         fun listFiles() {
 
             val refDB = databaseRef.child("User").child(userId!!).child("advert")
@@ -831,34 +891,9 @@ private fun ratingScore(){
                     else
                         toast("Data does not exist")
 
-                    val advertText1 = dialogData.advert1
-                    val advertText2 = dialogData.advert2
-                    val advertText3 = dialogData.advert3
-                    val advertText4 = dialogData.advert4
-                    val advertText5 = dialogData.advert5
-
-                    val arrayText = arrayListOf<String>(
-                        advertText1,
-                        advertText2,
-                        advertText3,
-                        advertText4,
-                        advertText5
-                    )
-
-/*
-
-                    advertText1.text = dialogData.advert1
-                    advertText2.text = dialogData.advert2
-                    advertText3.text = dialogData.advert3
-                    advertText4.text = dialogData.advert4
-                    advertText5.text = dialogData.advert5
-*/
-
-                    //    }
                 }
 
                 override fun onCancelled(p0: DatabaseError) {
-                    TODO("Not yet implemented")
                 }
             })
 
@@ -902,33 +937,6 @@ private fun ratingScore(){
 
     }
 
-    fun showDialog(ref: String?, textInput: String?){
-
-        val fragmentManager = requireActivity().supportFragmentManager
-
-        val bundle = bundleOf(Pair("ref", ref), Pair("textInput", textInput))
-        val newFragment = CustomDialogFragment()
-        newFragment.arguments = bundle
-        if (isLargeLayout){
-            newFragment.show(fragmentManager, "dialog")
-        }else{
-            val transaction = fragmentManager.beginTransaction()
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-            transaction.add(R.id.home_layout, newFragment)
-                .addToBackStack(null)
-                .commit()
-
-        }
-    }
-
-    private fun hideAppBarFab(img: CircleImageView) {
-        val params = img.layoutParams as CoordinatorLayout.LayoutParams
-        val behavior = params.behavior as? FloatingActionButton.Behavior
-
-        behavior?.isAutoHideEnabled = false
-        img.isGone =true
-    }
-
     private fun deleteAccepted(userId: String?){
         val refDeleteOrder = databaseRef.child("User").child(userId!!).child("accepted_order").child(
             userId!!
@@ -951,7 +959,90 @@ private fun ratingScore(){
         })
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == PERMISSION_REQUEST_PHONE) {
+            // Request for camera permission.
+            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission has been granted. Start camera preview Activity.
+              //  layout.showSnackbar(R.string.camera_permission_granted, Snackbar.LENGTH_SHORT)
+                requestPhone()
+            } else {
+                toast("Phone permission request was denied.")
+              //  layout.showSnackbar(R.string.camera_permission_denied, Snackbar.LENGTH_SHORT)
+            }
+        }
+
+    }
+
+    private fun showPhonePreview() {
+        // Check if the Camera permission has been granted
+        if (checkSelfPermissionCompat(Manifest.permission.READ_PHONE_STATE) ==
+            PackageManager.PERMISSION_GRANTED) {
+            // Permission is already available, start camera preview
+           // layout.showSnackbar(R.string.camera_permission_available, Snackbar.LENGTH_SHORT)
+            requestPhone()
+        } else {
+            // Permission is missing and must be requested.
+            requestPhonePermission()
+        }
+    }
+
+    private fun requestPhonePermission() {
+        // Permission has not been granted and must be requested.
+        if (shouldShowRequestPermissionRationaleCompat(Manifest.permission.READ_PHONE_STATE)) {
+            // Provide an additional rationale to the user if the permission was not granted
+            // and the user would benefit from additional context for the use of the permission.
+            // Display a SnackBar with a button to request the missing permission.
+          //  binding.homeLayout.showSnackbar(R.string.app_name,
+            //    Snackbar.LENGTH_INDEFINITE, R.string.ok)
+            //{
+                requestPermissionsCompat(arrayOf(Manifest.permission.READ_PHONE_STATE),
+                    PERMISSION_REQUEST_PHONE)
+           // }
+
+        } else {
+           // binding.homeLayout.showSnackbar("R.string.camera_permission_not_available", Snackbar.LENGTH_SHORT)
+            toast("Phone permission not available")
+
+            // Request the permission. The result will be received in onRequestPermissionResult().
+            requestPermissionsCompat(arrayOf(Manifest.permission.READ_PHONE_STATE), PERMISSION_REQUEST_PHONE)
+        }
+    }
+
+    private fun createShareIntent(businessName:String?) {
+        val shareText = "\"$businessName\" is on Artisan. You can download Artisan App on Google Play App Store https://bit.ly/therealartisan"
+        val shareIntent = ShareCompat.IntentBuilder.from(requireActivity())
+            .setText(shareText)
+            .setType("text/plain")
+            .createChooserIntent()
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+        startActivity(shareIntent)
+    }
+
+    // FloatingActionButtons anchored to AppBarLayouts have their visibility controlled by the scroll position.
+    // We want to turn this behavior off to hide the FAB when it is clicked.
+    //
+    // This is adapted from Chris Banes' Stack Overflow answer: https://stackoverflow.com/a/41442923
+    private fun hideAppBarFab(fab: FloatingActionButton) {
+        val params = fab.layoutParams as CoordinatorLayout.LayoutParams
+        val behavior = params.behavior as FloatingActionButton.Behavior
+        behavior.isAutoHideEnabled = false
+        fab.hide()
+    }
+
+    private fun checkNetwork(): Boolean{
+        //  if (Build.VERSION.SDK_INT  <= Build.VERSION_CODES.Q) {
+        val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+        val isConnected = activeNetwork?.isConnectedOrConnecting == true
+
+        return isConnected
 
 
-
+    }
 }

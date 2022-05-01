@@ -1,15 +1,38 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="colorOnPrimary">@color/colorWhite</item>
+        <item name="strokeColor">@color/colorAccent</item>
+        <item name="tabSelectedTextColor">@color/colorAccent</item>
+        <item name="rippleColor">@color/colorAccent</item>
+        <item name="colorControlNormal">@color/colorSecondary</item>
+        <item name="colorSwitchThumbNormal">@color/colorOnSecondary</item>
+        <item name="cornerRadius">4dp</item>
+        <item name="checkedButton">@id/signin</item>
+        <item name="android:foregroundTint">@color/colorOnPrimary</item>
+
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="colorOnPrimary">@color/colorWhite</item>
+        <item name="strokeColor">@color/colorAccent</item>
+        <item name="tabSelectedTextColor">@color/colorAccent</item>
+        <item name="rippleColor">@color/colorAccent</item>
+        <item name="cornerRadius">4dp</item>
+        <item name="checkedButton">@id/signin</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -21,6 +44,7 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:foregroundTint">@color/colorWhite</item>
     </style>
     <style name="MaterialButton" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
@@ -29,12 +53,11 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="colorSurface">@color/colorSurface</item>
         <item name="colorOnSecondary">@color/colorOnSecondary</item>
         <item name="colorOnPrimary">@color/colorWhite</item>
-        <item name="colorOnBackground">@color/colorOnBackground</item>
         <item name="strokeColor">@color/colorAccent</item>
         <item name="tabSelectedTextColor">@color/colorAccent</item>
+        <item name="colorControlNormal">@color/colorSecondary</item>
         <item name="rippleColor">@color/colorAccent</item>
         <item name="cornerRadius">4dp</item>
         <item name="checkedButton">@id/signin</item>
@@ -70,8 +93,8 @@
     </style>
 
     <style name="Widget.FastScrollSample.FastScroller.Floating">
-        <item name="fastScrollerIconColor">?colorAccent</item>
-        <item name="android:textColor">?colorAccent</item>
+        <item name="fastScrollerIconColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorAccent</item>
         <item name="android:background">@drawable/fastscroller_floating_background</item>
         <item name="android:elevation">2dp</item>
     </style>
@@ -109,56 +132,9 @@
     </style>
 
 
-<!-- For FlutterWave-->
-
-    <style name="TestNewTheme" parent="RaveAppTheme.NoActionBar">
-        <item name="colorPrimary">#092342</item>
-        <item name="colorPrimaryDark">#b71c1c</item>
-        <item name="colorAccent">#7cb342</item>
-        <item name="OTPButtonStyle">@style/otpBtnStyle2</item>
-        <item name="PayButtonStyle">@style/payBtnStyle2</item>
-        <item name="OTPHeaderStyle">@style/otpHeaderStyle2</item>
-        <item name="TabLayoutStyle">@style/tabLayoutStyle2</item>
-        <item name="PinHeaderStyle">@style/pinHeaderStyle2</item>
-        <item name="SavedCardButtonStyle">@style/svdCardsBtnStyle2</item>
-        <item name="PaymentTileStyle">@style/newPaymentTileStyle</item>
-        <item name="PaymentTileTextStyle">@style/newPaymentTileTextStyle</item>
-        <item name="PaymentTileDividerStyle">@style/newPaymentTileDividerStyle</item>
+    <!-- SplashActivity theme. -->
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:colorBackground">#D4EBF2</item>
     </style>
-
-    <style name="newPaymentTileTextStyle">
-        <item name="android:textColor">#4a4a4a</item>
-    </style>
-
-    <style name="newPaymentTileDividerStyle">
-        <item name="android:textColor">#4a4a4a</item>
-    </style>
-
-    <style name="newPaymentTileStyle">
-        <item name="android:background">#99f9a825</item>
-    </style>
-
-    <style name="pinHeaderStyle2">
-        <item name="android:background">#37474f</item>
-    </style>
-
-    <style name="otpBtnStyle2" parent="@android:style/Widget.Button">
-        <item name="android:background">@drawable/otp_button_curved_2</item>
-        <item name="android:textColor">#009688</item>
-    </style>
-
-    <style name="svdCardsBtnStyle2" parent="@android:style/Widget.Button">
-        <item name="android:background">@drawable/blue_btn_curved</item>
-        <item name="android:textColor">#039be5</item>
-    </style>
-
-    <style name="payBtnStyle2" parent="@android:style/Widget.Button">
-        <item name="android:background">@drawable/green_btn_curved</item>
-        <item name="android:textColor">#bcaaa4</item>
-    </style>
-
-
-    <!-- END -->
-
 
 </resources>
